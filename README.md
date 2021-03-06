@@ -1,5 +1,10 @@
 # CalendarApp
-
+# QuickStart
+```
+cd my-app
+yarn install
+yarn start
+```
 # Maintainers
 - Curtis Mason (cumason@bu.edu)
 - Chen Feng (cefeng@bu.edu)
