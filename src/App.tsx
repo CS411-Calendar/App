@@ -7,20 +7,6 @@ import LogIn from './onboarding/LogIn'
 function App() {
   return (
     <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/landing">Landing</Link>
-          </li>
-          <li>
-            <Link to="/sign-up">Registration</Link>
-          </li>
-          <li>
-            <Link to="/sign-in">Log in</Link>
-          </li>
-        </ul>
-      </nav>
-
       <Switch>
         <Route path="/landing">
           <Landing />
