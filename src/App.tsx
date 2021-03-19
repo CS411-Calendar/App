@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
 import Landing from './onboarding/Landing'
 import UserCredentials from './onboarding/registration/UserCredentials'
 import LogIn from './onboarding/LogIn'
+import 'tailwindcss/tailwind.css'
 
 function App() {
   return (
