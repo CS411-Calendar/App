@@ -11,21 +11,36 @@ function UserCredentials() {
       <form>
         <div className="grid justify-items-center">
           <input
+            className="mt-4 border-2 text-center w-2/5"
             name="username"
             type="text"
             placeholder="input username"
             required
           />
-          <input name="email" type="text" placeholder="input email" required />
-          <input name="email" type="text" placeholder="input email" required />
+          <input
+            className="mt-4 border-2 text-center w-2/5"
+            name="email"
+            type="text"
+            placeholder="input email"
+            required
+          />
+          <input
+            className="mt-4 border-2 text-center w-2/5"
+            name="email"
+            type="text"
+            placeholder="input email"
+            required
+          />
 
           <input
+            className="mt-4 border-2 text-center w-2/5"
             name="password"
             type="password"
             placeholder="password"
             required
           />
           <input
+            className="mt-4 border-2 text-center w-2/5"
             name="confirm_password"
             type="password"
             placeholder="confirm password"
