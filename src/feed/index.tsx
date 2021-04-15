@@ -11,8 +11,6 @@ let calendars = [
 ]
 
 export default function Feed() {
-  console.log(API_KEY)
-
   return (
     <div>
       <Calendar apiKey={API_KEY} calendars={calendars} />
