@@ -10,19 +10,19 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/">
+        <Route exact path="/">
           <Landing />
         </Route>
-        <Route path="/sign-up">
+        <Route exact path="/sign-up">
           <UserCredentials />
         </Route>
-        <Route path="/sign-in">
+        <Route exact path="/sign-in">
           <LogIn />
         </Route>
-
-        <Route path="/feed">
-          <Feed />
+        <Route exact path="/feed">
+          <Feed/>
         </Route>
+
       </Switch>
     </Router>
   )
