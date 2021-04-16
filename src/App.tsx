@@ -4,6 +4,7 @@ import Landing from './onboarding/Landing'
 import UserCredentials from './onboarding/registration/UserCredentials'
 import LogIn from './onboarding/LogIn'
 import Feed from './feed'
+import Invite from './invite'
 import 'tailwindcss/tailwind.css'
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
           <Landing />
         </Route>
         <Route exact path="/project/:id">
-          <Feed />
+          <Invite />
         </Route>
         <Route exact path="/sign-up">
           <UserCredentials />
