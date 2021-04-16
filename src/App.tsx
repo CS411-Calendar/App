@@ -13,13 +13,16 @@ function App() {
         <Route exact path="/">
           <Landing />
         </Route>
+        <Route exact path="/project/:id">
+          <Feed />
+        </Route>
         <Route exact path="/sign-up">
           <UserCredentials />
         </Route>
         <Route exact path="/sign-in">
           <LogIn />
         </Route>
-        <Route exact  path="/feed">
+        <Route exact path="/feed">
           <Feed/>
         </Route>
 
