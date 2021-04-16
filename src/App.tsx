@@ -19,7 +19,7 @@ function App() {
         <Route exact path="/sign-in">
           <LogIn />
         </Route>
-        <Route exact path="/feed">
+        <Route exact  path="/feed">
           <Feed/>
         </Route>
 
