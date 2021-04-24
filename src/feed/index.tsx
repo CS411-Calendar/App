@@ -5,7 +5,6 @@ import Calendar from '@ericz1803/react-google-calendar'
 import { API_URL } from '../constants'
 import { InviteModal, CreateModal } from '../components/modal'
 import {UserIcon, UserGroupIcon} from '@heroicons/react/solid'
-
 type WeatherArgs = {
   latitude: number
   longitude: number
