@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import { API_URL } from '../constants'
 import { InviteModal, CreateModal } from '../components/modal'
+import {UserIcon, UserGroupIcon} from '@heroicons/react/solid'
 
 type WeatherArgs = {
   latitude: number
@@ -85,7 +86,10 @@ export default function Feed() {
     let event_name = e.target.elements.event_name?.value
     let event_location = e.target.elements.event_location?.value
 
-    if (startdate > enddate) {
+    if(startdate=='' || enddate==''){
+      setShowAlert(true)
+    }
+    else if (startdate > enddate) {
       setShowAlert(true)
     } else if (startdate == enddate && starttime > endtime) {
       setShowAlert(true)
@@ -118,9 +122,13 @@ export default function Feed() {
     let event_name = e.target.elements.event_name?.value
     let event_location = e.target.elements.event_location?.value
 
-    if (startdate > enddate) {
+    if(startdate=='' || enddate==''){
       setShowAlert(true)
-    } else {
+    }
+    else if (startdate > enddate) {
+      setShowAlert(true)
+    } 
+    else {
       if (event_name == '') {
         event_name = 'New Event'
       }
@@ -138,9 +146,11 @@ export default function Feed() {
       <div>
         <Calendar apiKey={API_KEY} calendars={calendars} />
       </div>
-      <div className="grid grid-cols-2 w-screen">
-        <button className="border-2 font-bold py-8" onClick={createvent}>
-          Create Personal Event
+      <div className="fixed left-0 top-1/4 grid grid-rows-2">
+        <button className="bg-gray-300 py-2 px-2 rounded border-2 grid" onClick={createvent}>
+          <UserIcon className="text-blue-500 h-7 w-7 justify-self-center"></UserIcon>
+          <span className="text-xs">Add personal event</span>
+          
         </button>
         {showCreateModal ? (
           <CreateModal
@@ -152,8 +162,9 @@ export default function Feed() {
             }}
           />
         ) : null}
-        <button className="border-2 font-bold py-8" onClick={sendurl}>
-          Send Group Event Invitation
+        <button className="bg-gray-300 py-2 px-2 rounded border-2 grid" onClick={sendurl}>
+          <UserGroupIcon className="text-blue-500 h-7 w-7 justify-self-center"></UserGroupIcon>
+          <span className="text-xs">Create invitation</span>
         </button>
         {showInviteModal ? (
           <InviteModal
