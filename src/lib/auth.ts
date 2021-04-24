@@ -1,7 +1,7 @@
 import { gapi } from 'gapi-script'
 import apiGoogleconfig from '../config/apiGoogleconfig.json'
 
-export const initClient = () =>
+const initClient = () =>
   gapi.client.init({
     apiKey: apiGoogleconfig.apiKey,
     clientId: apiGoogleconfig.clientId,

@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import { API_URL } from '../constants'
 import { InviteModal, CreateModal } from '../components/modal'
+import { UserIcon } from '@heroicons/react/outline'
 
 type WeatherArgs = {
   latitude: number
