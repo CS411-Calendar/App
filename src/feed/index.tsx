@@ -1,61 +1,99 @@
 // All google code
-import React from "react";
-//import Modal from 'react-bootstrap/Modal'
-import Calendar from "@ericz1803/react-google-calendar";
-import {
-  isConstructorDeclaration,
-  isElementAccessExpression,
-} from "typescript";
-const API_KEY = "AIzaSyCodX0arMiAB5dM6RmFT-bfEDCl9YGn0dI";
+import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+import Calendar from '@ericz1803/react-google-calendar'
+import { API_URL } from '../constants'
+type WeatherArgs = {
+  latitude: number
+  longitude: number
+}
+type WeatherRes = {
+  temperature: number
+  weather: 'snow' | 'light rain' | 'clear' | 'scattered clouds' | 'heavy rain'
+}
+const API_KEY = 'AIzaSyCodX0arMiAB5dM6RmFT-bfEDCl9YGn0dI'
 let calendars = [
-  { calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com" },
+  { calendarId: '09opmkrjova8h5k5k46fedmo88@group.calendar.google.com' },
   {
-    calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com",
-    color: "#B241D1", //optional, specify color of calendar 2 events
+    calendarId: '09opmkrjova8h5k5k46fedmo88@group.calendar.google.com',
+    color: '#B241D1', //optional, specify color of calendar 2 events
   },
-];
+]
 
 //<button type="button" >clickme! </button>
 export default function Feed() {
-  const [showCreateModal, setShowCreateModal] = React.useState(false);
-  const [showInviteModal, setShowInviteModal] = React.useState(false);
-  const [showAlert, setShowAlert] = React.useState(false);
+  const [weather, setWeather] = useState<WeatherRes[]>([])
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [showAlert, setShowAlert] = useState(false)
+  const id = useParams()
+
+  const getWeather = async (args: WeatherArgs) => {
+    try {
+      const res = await fetch(
+        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`,
+      )
+      if (res.status === 200) {
+        const data: WeatherRes[] = await res.json()
+        setWeather(data)
+      }
+    } catch (e) {
+      console.error('Server unreachable')
+    }
+  }
+  //component onMount similar
+  useEffect(() => {
+    console.log('The dynamic id: ', id)
+    //check if user allowed access to geolocation
+    if ('geolocation' in navigator) {
+      console.log('Available')
+    } else {
+      console.log('Not Available')
+    }
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+      getWeather(position.coords)
+      console.log('Latitude is :', position.coords.latitude)
+      console.log('Longitude is :', position.coords.longitude)
+    })
+  }, [])
+
   function createvent(e) {
     //e.preventDefault();
     //console.log("The create event btn was clicked.");
-    setShowAlert(false);
-    setShowCreateModal(true);
+    setShowAlert(false)
+    setShowCreateModal(true)
   }
 
   function sendurl(e) {
     //e.preventDefault();
     //console.log("The invite btn was clicked.");
-    setShowAlert(false);
-    setShowInviteModal(true);
+    setShowAlert(false)
+    setShowInviteModal(true)
   }
 
   function handleCreateSubmit(e) {
     //console.log("submit the form");
-    e.preventDefault();
+    e.preventDefault()
 
-    let startdate = e.target.elements.startdate?.value;
-    let enddate = e.target.elements.enddate?.value;
-    let starttime = e.target.elements.starttime?.value;
-    let endtime = e.target.elements.endtime?.value;
-    let event_name = e.target.elements.event_name?.value;
-    let event_location = e.target.elements.event_location?.value;
+    let startdate = e.target.elements.startdate?.value
+    let enddate = e.target.elements.enddate?.value
+    let starttime = e.target.elements.starttime?.value
+    let endtime = e.target.elements.endtime?.value
+    let event_name = e.target.elements.event_name?.value
+    let event_location = e.target.elements.event_location?.value
 
     if (startdate > enddate) {
-      setShowAlert(true);
+      setShowAlert(true)
     } else if (startdate == enddate && starttime > endtime) {
-      setShowAlert(true);
+      setShowAlert(true)
     } else {
       //example output: 2021-04-16 10:24 2021-04-16 22:29 study 411 CAS344
-      if (event_name == ""){
-        event_name = "New Event"
+      if (event_name == '') {
+        event_name = 'New Event'
       }
-      if(event_location==""){
-        event_location= "Home"
+      if (event_location == '') {
+        event_location = 'Home'
       }
       console.log(
         startdate,
@@ -63,33 +101,33 @@ export default function Feed() {
         enddate,
         endtime,
         event_name,
-        event_location
-      );
-      setShowCreateModal(false);
+        event_location,
+      )
+      setShowCreateModal(false)
     }
   }
 
   function handleInviteSubmit(e) {
-    console.log("submit the invitation form");
-    e.preventDefault();
+    console.log('submit the invitation form')
+    e.preventDefault()
 
-    let startdate = e.target.elements.startdate?.value;
-    let enddate = e.target.elements.enddate?.value;
-    let event_name = e.target.elements.event_name?.value;
-    let event_location = e.target.elements.event_location?.value;
+    let startdate = e.target.elements.startdate?.value
+    let enddate = e.target.elements.enddate?.value
+    let event_name = e.target.elements.event_name?.value
+    let event_location = e.target.elements.event_location?.value
 
     if (startdate > enddate) {
-      setShowAlert(true);
+      setShowAlert(true)
     } else {
-      if (event_name == ""){
-        event_name = "New Event"
+      if (event_name == '') {
+        event_name = 'New Event'
       }
-      if(event_location==""){
-        event_location= "Home"
+      if (event_location == '') {
+        event_location = 'Home'
       }
       //example output: 2021-04-16 2021-04-16 study 411 CAS344
-      console.log(startdate, enddate, event_name, event_location);
-      setShowInviteModal(false);
+      console.log(startdate, enddate, event_name, event_location)
+      setShowInviteModal(false)
     }
   }
 
@@ -195,14 +233,15 @@ export default function Feed() {
                     <div
                       className={
                         //colors are not working (red)
-                        "text-black px-6 py-4 border-0 rounded relative mb-4 bg- red -500"
+                        'text-black px-6 py-4 border-0 rounded relative mb-4 bg- red -500'
                       }
                     >
                       <span className="text-xl inline-block mr-5 align-middle">
                         <i className="fas fa-bell" />
                       </span>
                       <span className="inline-block align-middle mr-8">
-                        <b className="capitalize">Error!</b> Please check your date/time and resubmit the form!
+                        <b className="capitalize">Error!</b> Please check your
+                        date/time and resubmit the form!
                       </span>
                       <button
                         className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none"
@@ -229,8 +268,8 @@ export default function Feed() {
           </>
         ) : null}
         <button className="border-2 font-bold py-8" onClick={sendurl}>
-          {" "}
-          Send Group Event Invitation{" "}
+          {' '}
+          Send Group Event Invitation{' '}
         </button>
         {showInviteModal ? (
           <>
@@ -306,14 +345,15 @@ export default function Feed() {
                     <div
                       className={
                         //colors are not working (red)
-                        "text-black px-6 py-4 border-0 rounded relative mb-4 bg- red -500"
+                        'text-black px-6 py-4 border-0 rounded relative mb-4 bg- red -500'
                       }
                     >
                       <span className="text-xl inline-block mr-5 align-middle">
                         <i className="fas fa-bell" />
                       </span>
                       <span className="inline-block align-middle mr-8">
-                        <b className="capitalize">Error!</b> Check your event dates and resubmit the form!
+                        <b className="capitalize">Error!</b> Check your event
+                        dates and resubmit the form!
                       </span>
                       <button
                         className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none"
@@ -341,5 +381,5 @@ export default function Feed() {
         ) : null}
       </div>
     </div>
-  );
+  )
 }

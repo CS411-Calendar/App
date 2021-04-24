@@ -4,25 +4,29 @@ import Landing from './onboarding/Landing'
 import UserCredentials from './onboarding/registration/UserCredentials'
 import LogIn from './onboarding/LogIn'
 import Feed from './feed'
+import Invite from './invite'
 import 'tailwindcss/tailwind.css'
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/">
+        <Route exact path="/">
           <Landing />
         </Route>
-        <Route path="/sign-up">
+        <Route exact path="/project/:id">
+          <Invite />
+        </Route>
+        <Route exact path="/sign-up">
           <UserCredentials />
         </Route>
-        <Route path="/sign-in">
+        <Route exact path="/sign-in">
           <LogIn />
         </Route>
-
-        <Route path="/feed">
-          <Feed />
+        <Route exact path="/feed">
+          <Feed/>
         </Route>
+
       </Switch>
     </Router>
   )
