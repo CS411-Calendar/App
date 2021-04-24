@@ -55,7 +55,8 @@ export default function Feed() {
       console.log(position.coords)
       getWeather(position.coords)
     })
-  }, [])
+    console.log("weather: ",weather)
+  }, [weather])
 
   useEffect(() => {
     if (weather.length > 0) {
