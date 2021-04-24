@@ -142,7 +142,6 @@ export default function Feed() {
         <button className="border-2 font-bold py-8" onClick={createvent}>
           Create Personal Event
         </button>
-        {/* source: https://www.creative-tim.com/learning-lab/tailwind-starter-kit/documentation/react/modals/regular */}
         {showCreateModal ? (
           <CreateModal
             {...{
