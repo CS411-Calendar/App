@@ -52,11 +52,16 @@ export default function Feed() {
     }
 
     navigator.geolocation.getCurrentPosition(function (position) {
+      console.log(position.coords)
       getWeather(position.coords)
-      console.log('Latitude is :', position.coords.latitude)
-      console.log('Longitude is :', position.coords.longitude)
     })
   }, [])
+
+  useEffect(() => {
+    if (weather.length > 0) {
+      console.log(weather)
+    }
+  }, [weather])
 
   function createvent(e) {
     //e.preventDefault();
