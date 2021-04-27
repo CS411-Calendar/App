@@ -23,7 +23,7 @@ function UserCredentials() {
 
   // Authorization scopes required by the API; multiple scopes can be
   // included, separated by spaces.
-  var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+  var SCOPES = "https://www.googleapis.com/auth/calendar";
 
   /* replace this */
   // var authorizeButton = document.getElementById("authorize_button");
@@ -105,13 +105,99 @@ function UserCredentials() {
     }
   }
 
-  function checkLoginStatus() {
-    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-      console.log("Current Status: Logged In");
-    } else {
-      console.log("Current Status: Logged Out");
+  // Create Event function
+
+  // helper function to parse date and time
+  function convertStringToDateTime(date, time, timeZone) {
+    // expected input example:
+    //     date = "2021-04-24"
+    //     time = "09:50"
+    var date_split = date.split("-");
+    var time_split = time.split(":");
+    var dateTime = new Date(
+      new Date().toLocaleString("en-US", { timeZone: timeZone })
+    );
+
+    for (var i = 0; i < date_split.length; i++) {
+      date_split[i] = parseInt(date_split[i]);
     }
+
+    for (i = 0; i < time_split.length; i++) {
+      time_split[i] = parseInt(time_split[i]);
+    }
+    dateTime.setFullYear(date_split[0]);
+    dateTime.setDate(date_split[2]);
+    // Somehow the months counts from 0
+    dateTime.setMonth(date_split[1] - 1);
+    dateTime.setHours(time_split[0]);
+    dateTime.setMinutes(time_split[1]);
+
+    return dateTime;
   }
+
+  const createEvent = async (
+    eventStartDate,
+    eventStartTime,
+    eventEndDate,
+    eventEndTime,
+    eventName,
+    eventLocation
+  ) => {
+    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+      var timezone;
+
+      var targetCalendarId = "primary";
+      // get time zone information associated to the user's calendar
+      await gapi.client.calendar.calendarList
+        .get({ calendarId: "primary" })
+        .then(
+          function (response) {
+            timezone = response.result.timeZone;
+          },
+          function (reason) {
+            timezone = "America/New_York";
+            console.log("Failed to extract time zone");
+            console.log(reason);
+          }
+        );
+
+      var eventStartDateTime = convertStringToDateTime(
+        eventStartDate,
+        eventStartTime,
+        timezone
+      );
+      var eventEndDateTime = convertStringToDateTime(
+        eventEndDate,
+        eventEndTime,
+        timezone
+      );
+
+      console.log(`Start: ${eventStartDateTime}; End: ${eventEndDateTime}`);
+
+      var event = {
+        summary: eventName,
+        location: eventLocation,
+        start: {
+          dateTime: eventStartDateTime.toISOString(),
+        },
+        end: {
+          dateTime: eventEndDateTime.toISOString(),
+        },
+      };
+      var request = gapi.client.calendar.events.insert({
+        calendarId: "primary",
+        resource: event,
+      });
+
+      request.execute(function (event) {
+        console.log("Event created: " + event.htmlLink);
+      });
+
+      console.log("Completed Event Insertion");
+    } else {
+      console.log("Not Logged In...");
+    }
+  };
 
   return (
     <div className="grid grid-cols-4 gap-8">
@@ -134,10 +220,20 @@ function UserCredentials() {
         list
       </button>
       <button
-        onClick={(e) => checkLoginStatus()}
+        onClick={(e) =>
+          createEvent(
+            // Edit this part so that it takes input from user input instead of hard-coded input
+            "2021-04-30",
+            "09:50",
+            "2021-04-30",
+            "15:52",
+            "testEvent",
+            "Boston, MA"
+          )
+        }
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
-        status
+        Create Event
       </button>
     </div>
   );
