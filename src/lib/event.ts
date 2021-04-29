@@ -165,7 +165,7 @@ export const createSingleEvent = async (
 // INPUT: startDateTime, endDateTime, Location, Title, List of attendees (emails)
 // Create event for single attendee
 // Example Use:
-// createEvent("2021-04-30", "09:50", "2021-04-30", "15:52", "testEvent", "Boston, MA", [ "test123@gmail.com", "test223@gmail.com", ... ])
+// createAttendeeEvent("2021-04-30", "09:50", "2021-04-30", "15:52", "testEvent", "Boston, MA", [ "test123@gmail.com", "test223@gmail.com", ... ])
 export const createAttendeeEvent = async (
   eventStartDate,
   eventStartTime,
@@ -173,7 +173,7 @@ export const createAttendeeEvent = async (
   eventEndTime,
   eventName,
   eventLocation,
-  attendees
+  attendees: String[]
 ) => {
   if (isAuthorized()) {
     var timezone;
@@ -201,11 +201,18 @@ export const createAttendeeEvent = async (
       timezone
     );
 
+    // Construct attendee list
+    const attendeeFormatted = attendees.map((attendee) => ({
+      email: attendee,
+    }));
+
+    // [ { email: "new@example.com"} ]
+
     // Construct event details
     var event = {
       summary: eventName,
       location: eventLocation,
-      attendees: attendees,
+      attendees: attendeeFormatted,
       start: {
         dateTime: eventStartDateTime.toISOString(),
       },

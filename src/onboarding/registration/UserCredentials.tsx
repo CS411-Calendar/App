@@ -6,7 +6,7 @@ import {
   logout,
   listUpcoming,
 } from "../../lib/auth";
-import { list14daysEvents } from "../../lib/event";
+import { list14daysEvents, createAttendeeEvent } from "../../lib/event";
 
 function UserCredentials() {
   useEffect(() => {
@@ -34,7 +34,17 @@ function UserCredentials() {
         list
       </button>
       <button
-        onClick={(e) => list14daysEvents()}
+        onClick={(e) =>
+          createAttendeeEvent(
+            "2021-05-02",
+            "09:50",
+            "2021-05-02",
+            "15:52",
+            "testEvent",
+            "Boston, MA",
+            ["takshiro@bu.edu"]
+          )
+        }
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         status
