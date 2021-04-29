@@ -224,6 +224,7 @@ export const createAttendeeEvent = async (
     // Construct the claendar event insert request and execute it
     var request = gapi.client.calendar.events.insert({
       calendarId: "primary",
+      sendUpdates: "all",
       resource: event,
     });
     request.execute(function (event) {
