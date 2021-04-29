@@ -5,13 +5,14 @@ import Calendar from '@ericz1803/react-google-calendar'
 import { API_URL } from '../constants'
 import { InviteModal, CreateModal } from '../components/modal'
 import {UserIcon, UserGroupIcon} from '@heroicons/react/solid'
+import {number} from "yup";
 type WeatherArgs = {
   latitude: number
   longitude: number
 }
-type WeatherRes = {
+export type WeatherRes = {
   temperature: number
-  weather: 'snow' | 'light rain' | 'clear' | 'scattered clouds' | 'heavy rain'
+  weather: string
 }
 const API_KEY = 'AIzaSyCodX0arMiAB5dM6RmFT-bfEDCl9YGn0dI'
 let calendars = [
@@ -158,6 +159,7 @@ export default function Feed() {
               setShowAlert,
               setShowCreateModal,
               showAlert,
+              weather,
             }}
           />
         ) : null}
