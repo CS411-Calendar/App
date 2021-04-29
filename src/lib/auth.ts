@@ -5,8 +5,9 @@ export const initClient = () =>
   gapi.client.init({
     apiKey: apiGoogleconfig.apiKey,
     clientId: apiGoogleconfig.clientId,
-    discoveryDocs:
+    discoveryDocs: [
       "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+    ],
     scope: "https://www.googleapis.com/auth/calendar",
   });
 

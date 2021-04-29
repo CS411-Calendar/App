@@ -1,16 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 import {
   isAuthorized,
   oauthSetup,
   login,
   logout,
   listUpcoming,
-} from '../../lib/auth'
+} from "../../lib/auth";
+import { list14daysEvents } from "../../lib/event";
 
 function UserCredentials() {
   useEffect(() => {
-    oauthSetup()
-  })
+    oauthSetup();
+  });
 
   return (
     <div className="grid grid-cols-4 gap-8">
@@ -33,13 +34,13 @@ function UserCredentials() {
         list
       </button>
       <button
-        onClick={isAuthorized}
+        onClick={(e) => list14daysEvents()}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         status
       </button>
     </div>
-  )
+  );
 }
 
-export default UserCredentials
+export default UserCredentials;
