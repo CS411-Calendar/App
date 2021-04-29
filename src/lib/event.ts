@@ -27,9 +27,6 @@ export const list14daysEvents = () => {
   };
 
   if (isAuthorized()) {
-    // Debug
-    // console.log("Current Status: Logged In");
-
     // Get the events information
     gapi.client.calendar.events
       .list({
@@ -139,8 +136,6 @@ export const createSingleEvent = async (
       eventEndTime,
       timezone
     );
-    // Debug
-    // console.log(`Start: ${eventStartDateTime}; End: ${eventEndDateTime}`);
 
     // Construct event details
     var event = {
@@ -162,11 +157,72 @@ export const createSingleEvent = async (
     request.execute(function (event) {
       console.log("Event created: " + event.htmlLink);
     });
-    // Debug
-    // console.log("Completed Event Insertion");
   } else {
     console.log("Not Logged In...");
   }
 };
 
 // INPUT: startDateTime, endDateTime, Location, Title, List of attendees (emails)
+// Create event for single attendee
+// Example Use:
+// createEvent("2021-04-30", "09:50", "2021-04-30", "15:52", "testEvent", "Boston, MA", [ "test123@gmail.com", "test223@gmail.com", ... ])
+export const createAttendeeEvent = async (
+  eventStartDate,
+  eventStartTime,
+  eventEndDate,
+  eventEndTime,
+  eventName,
+  eventLocation,
+  attendees
+) => {
+  if (isAuthorized()) {
+    var timezone;
+    // get time zone information associated to the user's calendar
+    await gapi.client.calendar.calendarList.get({ calendarId: "primary" }).then(
+      function (response) {
+        timezone = response.result.timeZone;
+      },
+      function (reason) {
+        timezone = "America/New_York";
+        console.log("Failed to extract time zone");
+        console.log(reason);
+      }
+    );
+
+    // Convert event start / end DateTime and time zone string into DateTime object
+    var eventStartDateTime = convertStringToDateTime(
+      eventStartDate,
+      eventStartTime,
+      timezone
+    );
+    var eventEndDateTime = convertStringToDateTime(
+      eventEndDate,
+      eventEndTime,
+      timezone
+    );
+
+    // Construct event details
+    var event = {
+      summary: eventName,
+      location: eventLocation,
+      attendees: attendees,
+      start: {
+        dateTime: eventStartDateTime.toISOString(),
+      },
+      end: {
+        dateTime: eventEndDateTime.toISOString(),
+      },
+    };
+
+    // Construct the claendar event insert request and execute it
+    var request = gapi.client.calendar.events.insert({
+      calendarId: "primary",
+      resource: event,
+    });
+    request.execute(function (event) {
+      console.log("Event created: " + event.htmlLink);
+    });
+  } else {
+    console.log("Not Logged In...");
+  }
+};
