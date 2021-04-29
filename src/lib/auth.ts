@@ -12,7 +12,11 @@ export const initClient = () =>
   });
 
 export const isAuthorized = () => {
-  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+  console.log(
+    gapi.auth2.getAuthInstance().isSignedIn.get()
+      ? "Authorized"
+      : "Not Authorized"
+  );
   return gapi.auth2.getAuthInstance().isSignedIn.get();
 };
 export const oauthSetup = () => {
