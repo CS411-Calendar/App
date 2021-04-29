@@ -29,6 +29,9 @@ export function CreateModal({
     return Number(dd)-5;
   }
 
+  function handleDateChange(e){
+    console.log(e.target.value)
+  }
 
 
   return (
@@ -62,6 +65,7 @@ export function CreateModal({
                     className={`w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out mb-4`}
                     id="startdate"
                     placeholder="Start Date"
+                    onChange = {handleDateChange}
                   />
                 </div>
                 <div>
@@ -80,6 +84,7 @@ export function CreateModal({
                     className={`w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out mb-4`}
                     id="enddate"
                     placeholder="End Date"
+                    onChange = {handleDateChange}
                   />
                 </div>
                 <div>
