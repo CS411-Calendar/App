@@ -34,17 +34,7 @@ function UserCredentials() {
         list
       </button>
       <button
-        onClick={(e) =>
-          createAttendeeEvent(
-            "2021-05-02",
-            "09:50",
-            "2021-05-02",
-            "15:52",
-            "testEvent",
-            "Boston, MA",
-            ["takashirono@gmail.com"]
-          )
-        }
+        onClick={isAuthorized}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         status
