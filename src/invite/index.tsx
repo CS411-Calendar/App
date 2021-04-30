@@ -5,6 +5,9 @@ import apiGoogleconfig from "../config/apiGoogleconfig.json"
 
 type ParamsType = { id: string }
 export default function Invite() {
+  const [acceptedInvite, setAcceptedInvite] = useState(false)
+  const acceptInviteClick = () => setAcceptedInvite(true)
+
   // params stuff
   const params = useParams<ParamsType>()
   console.log(params)
@@ -28,14 +31,25 @@ export default function Invite() {
         The ID of this page is: <b>{params.id}</b>
       </div>
       <div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
-        <button
-          onClick={(e) => {
-            console.log("Join Calendar")
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Join Calendar
-        </button>
+        {!acceptedInvite && (
+          <button
+            onClick={(e) => {
+              acceptInviteClick()
+            }}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Join Calendar
+          </button>
+        )}
+        {acceptedInvite && (
+          <h1>
+            {" "}
+            Thank you for accepting the invite from&nbsp;
+            {/* change this part to show the host */}
+            {calendars[0].calendarId}. The owner will send you a calendar invite
+            via E-mail shortly once all attendees accept the invite.
+          </h1>
+        )}
       </div>
     </div>
   )
