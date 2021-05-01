@@ -1,0 +1,13 @@
+.weatherStartInfo{
+    text-align: center;
+    padding-bottom: 15px;
+    font-weight: bold;
+    color: darkorange;
+}
+
+.weatherEndInfo{
+    text-align: center;
+    padding-bottom: 15px;
+    font-weight: bold;
+    color: darkorange;
+}
