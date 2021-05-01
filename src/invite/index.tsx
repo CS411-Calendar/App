@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { gapi } from "gapi-script"
 import Calendar from "@ericz1803/react-google-calendar"
 import apiGoogleconfig from "../config/apiGoogleconfig.json"
-import { oauthSetup, isAuthorized, login } from "../lib/auth"
+import { oauthSetup, isAuthorized, login, getEmail } from "../lib/auth"
 
 type ParamsType = { id: string }
 export default function Invite() {
@@ -15,23 +15,11 @@ export default function Invite() {
   const acceptInviteClick = async () => {
     if (isAuthorized()) {
       // Extract user email
-      console.log(
-        gapi.auth2
-          .getAuthInstance()
-          .currentUser.get()
-          .getBasicProfile()
-          .getEmail()
-      )
+      console.log(getEmail())
     } else {
       await login()
       // Extract user email
-      console.log(
-        gapi.auth2
-          .getAuthInstance()
-          .currentUser.get()
-          .getBasicProfile()
-          .getEmail()
-      )
+      console.log(getEmail())
     }
     setAcceptedInvite(true)
   }
