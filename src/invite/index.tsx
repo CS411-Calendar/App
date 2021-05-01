@@ -1,12 +1,40 @@
 import React, { useEffect, useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
+import { gapi } from "gapi-script"
 import Calendar from "@ericz1803/react-google-calendar"
 import apiGoogleconfig from "../config/apiGoogleconfig.json"
+import { oauthSetup, isAuthorized, login } from "../lib/auth"
 
 type ParamsType = { id: string }
 export default function Invite() {
+  useEffect(() => {
+    oauthSetup()
+  })
+
   const [acceptedInvite, setAcceptedInvite] = useState(false)
-  const acceptInviteClick = () => setAcceptedInvite(true)
+  const acceptInviteClick = async () => {
+    if (isAuthorized()) {
+      // Extract user email
+      console.log(
+        gapi.auth2
+          .getAuthInstance()
+          .currentUser.get()
+          .getBasicProfile()
+          .getEmail()
+      )
+    } else {
+      await login()
+      // Extract user email
+      console.log(
+        gapi.auth2
+          .getAuthInstance()
+          .currentUser.get()
+          .getBasicProfile()
+          .getEmail()
+      )
+    }
+    setAcceptedInvite(true)
+  }
 
   // params stuff
   const params = useParams<ParamsType>()
