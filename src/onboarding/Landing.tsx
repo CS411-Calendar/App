@@ -5,11 +5,13 @@ import {
   Redirect,
   useHistory,
 } from "react-router-dom"
-import "tailwindcss/tailwind.css"
-import Feed from "../feed"
-import { Link } from "react-router-dom"
 import { oauthSetup, login, isAuthorized } from "../lib/auth"
 // import styles from "Landing.css"
+import "tailwindcss/tailwind.css";
+import Feed from "../feed";
+import "./landing.css"
+import { Link } from "react-router-dom";
+import background from "../img/calendar-wallpaper.jpg"
 
 function Landing() {
   const history = useHistory()
@@ -30,31 +32,24 @@ function Landing() {
   }
 
   return (
-    <div>
-      <div className="grid grid-rows-2 item-center justify-items-center h-screen">
-        <div className="flex justify-items-center items-center h-full">
-          <h1 className="text-6xl self-center font-bold ">
-            {" "}
-            Welcome to MY CALENDAR{" "}
-          </h1>
-        </div>
-        <button
+    <div className="h-screen" style={{
+      backgroundImage: `url(${background})`,
+      backgroundPosition: 'center',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat' }}
+    >
+      <h1 className="landingHeader">
+        Welcome to My Calendar
+      </h1>
+      <div>
+        <button 
+          className="linkStyle"
           onClick={loginLanding}
-          className="border-2 px-8 py-4 bg-gray-300 h-1/5 rounded-lg items-center"
+          className="loginButton" 
           id="login"
-        >
+         >
           Login with Google
         </button>
-        {/* <div>
-        <Link to="/feed">
-          <div
-            className="border-2 px-8 py-4 bg-gray-300 rounded-lg items-center"
-            id="login"
-          >
-            Login with Google
-          </div>
-        </Link>
-      </div> */}
       </div>
     </div>
   )

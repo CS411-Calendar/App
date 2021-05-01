@@ -1,8 +1,13 @@
+import {WeatherRes} from "../../feed"
+import {useState} from "react";
+import './createModal.css'
+
 type Props = {
   setShowInviteModal: (show: boolean) => void
   handleInviteSubmit: (e: any) => void
   setShowAlert: (alert: boolean) => void
   showAlert: boolean
+  weather: WeatherRes[]
 }
 
 export function InviteModal({
@@ -10,7 +15,54 @@ export function InviteModal({
   handleInviteSubmit,
   showAlert,
   setShowAlert,
+  weather,
 }: Props) {
+
+  // var json = weather;
+  var json = [{"temperature":"75.11","weather":"light rain"},{"temperature":"67.06","weather":"light rain"},{"temperature":"63.77","weather":"moderate rain"},{"temperature":"51.71","weather":"sky is clear"},{"temperature":"65.64","weather":"light rain"},{"temperature":"56.98","weather":"light rain"},{"temperature":"55.69","weather":"moderate rain"},{"temperature":"56.1","weather":"light rain"},{"temperature":"61.02","weather":"overcast clouds"},{"temperature":"51.76","weather":"light rain"},{"temperature":"60.87","weather":"light rain"},{"temperature":"52.12","weather":"light rain"},{"temperature":"50.9","weather":"light rain"},{"temperature":"65.05","weather":"broken clouds"},{"temperature":"82.09","weather":"light rain"},{"temperature":"75.96","weather":"light rain"},{"temperature":"55","weather":"moderate rain"}];
+  var weatherStart:string, weatherEnd:string
+
+  const [weatherStartInfo, setWeatherStartInfo] = useState("")
+  const [weatherEndInfo, setWeatherEndInfo] = useState("")
+
+  const daysUntilTarget = (target: Date) => {
+    const today = new Date()
+    if (target < today)
+      return null
+    const delta = (target.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)
+    return Math.floor(delta)
+  }
+
+  function handleStartDateChange(e){
+    const dateString: string = e.target.value
+    var startDate = new Date(dateString)
+    startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
+
+    if(Number(daysUntilTarget(startDate)) < 16) {
+      weatherStart = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    }else{
+      //no weather data available
+      weatherStart = "No weather data available"
+    }
+    console.log("JSON Data Start temperature: ", weatherStart)
+    setWeatherStartInfo(weatherStart)
+  }
+
+  function handleEndDateChange(e){
+    const dateString: string = e.target.value
+    var startDate = new Date(dateString)
+    startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
+
+    if(Number(daysUntilTarget(startDate)) < 16) {
+      weatherEnd = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    }else{
+      //no weather data available
+      weatherEnd = "No weather data available"
+    }
+    console.log("JSON Data End temperature: ", weatherEnd)
+    setWeatherEndInfo(weatherEnd)
+  }
+
   return (
     <>
       {' '}
@@ -41,8 +93,10 @@ export function InviteModal({
                     className={`w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out mb-4`}
                     id="startdate"
                     placeholder="Start Date"
+                    onChange={handleStartDateChange}
                   />
                 </div>
+                <div className={"weatherStartInfo"}> {weatherStartInfo} </div>
                 <div>
                   <label htmlFor="password">End Date</label>
                   <input
@@ -50,8 +104,10 @@ export function InviteModal({
                     className={`w-full p-2 text-primary border rounded-md outline-none text-sm transition duration-150 ease-in-out mb-4`}
                     id="enddate"
                     placeholder="End Date"
+                    onChange={handleEndDateChange}
                   />
                 </div>
+                <div className={"weatherEndInfo"}> {weatherEndInfo} </div>
                 <div>
                   <label htmlFor="password">Event Name</label>
                   <input

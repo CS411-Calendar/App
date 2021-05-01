@@ -1,4 +1,3 @@
-// All google code
 import React, { useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import Calendar from "@ericz1803/react-google-calendar"
@@ -8,14 +7,15 @@ import { UserIcon, UserGroupIcon } from "@heroicons/react/solid"
 import { createSingleEvent, createAttendeeEvent } from "../lib/event"
 import { oauthSetup, isAuthorized } from "../lib/auth"
 import apiGoogleconfig from "../config/apiGoogleconfig.json"
+import {number} from "yup";
 
 type WeatherArgs = {
   latitude: number
   longitude: number
 }
-type WeatherRes = {
+export type WeatherRes = {
   temperature: number
-  weather: "snow" | "light rain" | "clear" | "scattered clouds" | "heavy rain"
+  weather: string
 }
 const API_KEY = apiGoogleconfig.apiKey
 let calendars = [
@@ -53,6 +53,7 @@ export default function Feed() {
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
         setWeather(data)
+
       }
     } catch (e) {
       console.error("Server unreachable")
@@ -182,6 +183,7 @@ export default function Feed() {
               setShowAlert,
               setShowCreateModal,
               showAlert,
+              weather,
             }}
           />
         ) : null}
@@ -199,6 +201,7 @@ export default function Feed() {
               setShowInviteModal,
               showAlert,
               handleInviteSubmit,
+              weather,
             }}
           />
         ) : null}
