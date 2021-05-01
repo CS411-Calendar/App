@@ -12,7 +12,7 @@ function Landing() {
       <div className="flex justify-items-center items-center h-full">
         <h1 className="text-6xl self-center font-bold ">
           {" "}
-          Wlecome to MY CALENDAR{" "}
+          Welcome to MY CALENDAR{" "}
         </h1>
       </div>
       <div>
