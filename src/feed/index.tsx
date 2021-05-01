@@ -39,6 +39,7 @@ export default function Feed() {
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
         setWeather(data)
+
       }
     } catch (e) {
       console.error('Server unreachable')
@@ -174,6 +175,7 @@ export default function Feed() {
               setShowInviteModal,
               showAlert,
               handleInviteSubmit,
+              weather,
             }}
           />
         ) : null}
