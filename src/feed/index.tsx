@@ -5,9 +5,9 @@ import { API_URL } from "../constants"
 import { InviteModal, CreateModal } from "../components/modal"
 import { UserIcon, UserGroupIcon } from "@heroicons/react/solid"
 import { createSingleEvent, createAttendeeEvent } from "../lib/event"
-import { oauthSetup } from "../lib/auth"
+import { oauthSetup, isAuthorized } from "../lib/auth"
+import apiGoogleconfig from "../config/apiGoogleconfig.json"
 import {number} from "yup";
-
 
 type WeatherArgs = {
   latitude: number
@@ -17,7 +17,7 @@ export type WeatherRes = {
   temperature: number
   weather: string
 }
-const API_KEY = "AIzaSyCodX0arMiAB5dM6RmFT-bfEDCl9YGn0dI"
+const API_KEY = apiGoogleconfig.apiKey
 let calendars = [
   { calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com" },
   {
@@ -26,11 +26,18 @@ let calendars = [
   },
 ]
 
-//<button type="button" >clickme! </button>
 export default function Feed() {
+  const history = useHistory()
+
   useEffect(() => {
-    oauthSetup()
+    oauthSetup(sendToLanding)
   })
+
+  const sendToLanding = () => {
+    if (!isAuthorized()) {
+      history.push("/")
+    }
+  }
 
   const [weather, setWeather] = useState<WeatherRes[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)

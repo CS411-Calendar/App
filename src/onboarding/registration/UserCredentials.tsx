@@ -1,17 +1,17 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 import {
   isAuthorized,
   oauthSetup,
   login,
   logout,
   listUpcoming,
-} from "../../lib/auth";
-import { list14daysEvents, createAttendeeEvent } from "../../lib/event";
+} from "../../lib/auth"
+import { list14daysEvents, createAttendeeEvent } from "../../lib/event"
 
 function UserCredentials() {
   useEffect(() => {
-    oauthSetup();
-  });
+    oauthSetup()
+  })
 
   return (
     <div className="grid grid-cols-4 gap-8">
@@ -40,7 +40,7 @@ function UserCredentials() {
         status
       </button>
     </div>
-  );
+  )
 }
 
-export default UserCredentials;
+export default UserCredentials
