@@ -10,5 +10,5 @@ yarn start
 - Curtis Mason (cumason@bu.edu)
 - Chen Feng (cefeng@bu.edu)
 - Manish Patel (mpatel27@bu.edu)
-- Ji Zhang
-- Takamitsu Shirono
+- Ji Zhang (annajz@bu.edu)
+- Takamitsu Shirono (takshiro@bu.edu)
