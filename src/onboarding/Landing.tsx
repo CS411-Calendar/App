@@ -2,29 +2,30 @@ import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import Feed from "../feed";
+import "./landing.css"
 import { Link } from "react-router-dom";
-// import styles from "Landing.css"
+import background from "../img/calendar-wallpaper.jpg"
 
 function Landing() {
   
   return (
-    <div className="grid grid-rows-2 item-center justify-items-center h-screen">
-      <div className="flex justify-items-center items-center h-full">
-        <h1 className="text-6xl self-center font-bold ">
-          {" "}
-          Welcome to MY CALENDAR{" "}
-        </h1>
-      </div>
-      <div>
-        <Link to="/feed">
-          <div
-            className="border-2 px-8 py-4 bg-gray-300 rounded-lg items-center"
-            id="login"
-          >
-            Login with Google
+    <div className="h-screen" style={{
+        backgroundImage: `url(${background})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat' }}>
+            <h1 className="landingHeader">
+              {" "}
+              Welcome to My Calendar
+              {" "}
+            </h1>
+          <div>
+            <Link className="linkStyle" to="/feed">
+              <div className="loginButton" id="login">
+                Login with Google
+              </div>
+            </Link>
           </div>
-        </Link>
-      </div>
     </div>
   );
 }
