@@ -19,8 +19,11 @@ export const isAuthorized = () => {
   )
   return gapi.auth2.getAuthInstance().isSignedIn.get()
 }
-export const oauthSetup = () => {
-  gapi.load("client:auth2", initClient)
+export const oauthSetup = (f: () => void = () => {}) => {
+  gapi.load("client:auth2", async () => {
+    await initClient()
+    f()
+  })
 }
 export const logout = () => gapi.auth2.getAuthInstance().signOut()
 export const login = () => gapi.auth2.getAuthInstance().signIn()
