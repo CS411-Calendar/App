@@ -1,5 +1,6 @@
 import {WeatherRes} from "../../feed";
 import {start} from "repl";
+import {number} from "yup";
 
 type Props = {
   setShowCreateModal: (show: boolean) => void
@@ -18,6 +19,7 @@ export function CreateModal({
 
   // var json = weather;
   var json = [{"temperature":"75.11","weather":"light rain"},{"temperature":"67.06","weather":"light rain"},{"temperature":"63.77","weather":"moderate rain"},{"temperature":"51.71","weather":"sky is clear"},{"temperature":"65.64","weather":"light rain"},{"temperature":"56.98","weather":"light rain"},{"temperature":"55.69","weather":"moderate rain"},{"temperature":"56.1","weather":"light rain"},{"temperature":"61.02","weather":"overcast clouds"},{"temperature":"51.76","weather":"light rain"},{"temperature":"60.87","weather":"light rain"},{"temperature":"52.12","weather":"light rain"},{"temperature":"50.9","weather":"light rain"},{"temperature":"65.05","weather":"broken clouds"},{"temperature":"82.09","weather":"light rain"},{"temperature":"75.96","weather":"light rain"},{"temperature":"55","weather":"moderate rain"}];
+  var weatherStart:String, weatherEnd:String
 
   const daysUntilTarget = (target: Date) => {
     const today = new Date()
@@ -31,16 +33,28 @@ export function CreateModal({
     const dateString: string = e.target.value
     var startDate = new Date(dateString)
     startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
-    console.log("Actual Start date: ",startDate)
-    console.log("Days to target: ", daysUntilTarget(startDate))
+
+    if(Number(daysUntilTarget(startDate)) < 16) {
+      weatherStart = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    }else{
+      //no weather data available
+      weatherStart = "No weather data available"
+    }
+    console.log("JSON Data Start temperature: ", weatherStart)
   }
 
   function handleEndDateChange(e){
     const dateString: string = e.target.value
     var startDate = new Date(dateString)
     startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
-    console.log("Actual End date: ",startDate)
-    console.log("Days to target: ", daysUntilTarget(startDate))
+
+    if(Number(daysUntilTarget(startDate)) < 16) {
+      weatherEnd = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    }else{
+      //no weather data available
+      weatherEnd = "No weather data available"
+    }
+    console.log("JSON Data End temperature: ", weatherEnd)
   }
 
 
@@ -78,7 +92,7 @@ export function CreateModal({
                     onChange = {handleStartDateChange}
                   />
                 </div>
-                <div>TEST TEST </div>
+                {/*<div> {weatherStart} </div>*/}
                 <div>
                   <label htmlFor="password">Start time</label>
                   <input
