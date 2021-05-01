@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { gapi } from "gapi-script"
-import Calendar from "@ericz1803/react-google-calendar"
-import apiGoogleconfig from "../config/apiGoogleconfig.json"
-import { oauthSetup, isAuthorized, login, getEmail } from "../lib/auth"
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import Calendar from '@ericz1803/react-google-calendar'
+import apiGoogleconfig from '../config/apiGoogleconfig.json'
+import { oauthSetup, isAuthorized, login, getEmail } from '../lib/auth'
 
 type ParamsType = { id: string }
 export default function Invite() {
@@ -32,8 +31,8 @@ export default function Invite() {
   const API_KEY = apiGoogleconfig.apiKey
   let calendars = [
     {
-      calendarId: "u.s.apple1102@gmail.com",
-      color: "#B241D1", //optional, specify color of calendar 2 events
+      calendarId: 'u.s.apple1102@gmail.com',
+      color: '#B241D1', //optional, specify color of calendar 2 events
     },
   ]
 
@@ -59,7 +58,7 @@ export default function Invite() {
         )}
         {acceptedInvite && (
           <h1>
-            {" "}
+            {' '}
             Thank you for accepting the invite from&nbsp;
             {/* change this part to show the host */}
             {calendars[0].calendarId}. The owner will send you a calendar invite

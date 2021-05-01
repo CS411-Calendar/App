@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Landing from './onboarding/Landing'
 import Feed from './feed'
 import Invite from './invite'

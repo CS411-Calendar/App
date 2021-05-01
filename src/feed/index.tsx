@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
-import Calendar from "@ericz1803/react-google-calendar"
-import { API_URL } from "../constants"
-import { InviteModal, CreateModal } from "../components/modal"
-import { UserIcon, UserGroupIcon } from "@heroicons/react/solid"
-import { createSingleEvent, createAttendeeEvent } from "../lib/event"
-import { oauthSetup, isAuthorized } from "../lib/auth"
-import apiGoogleconfig from "../config/apiGoogleconfig.json"
-import {number} from "yup";
-
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+import Calendar from '@ericz1803/react-google-calendar'
+import { API_URL } from '../constants'
+import { InviteModal, CreateModal } from '../components/modal'
+import { UserIcon, UserGroupIcon } from '@heroicons/react/solid'
+import { createSingleEvent } from '../lib/event'
+import { oauthSetup, isAuthorized, getEmail } from '../lib/auth'
+import apiGoogleconfig from '../config/apiGoogleconfig.json'
+import { Loading } from '../components/EmptyState'
 type WeatherArgs = {
   latitude: number
   longitude: number
@@ -18,80 +17,66 @@ export type WeatherRes = {
   weather: string
 }
 const API_KEY = apiGoogleconfig.apiKey
-let calendars = [
-  { calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com" },
-  {
-    calendarId: "09opmkrjova8h5k5k46fedmo88@group.calendar.google.com",
-    color: "#B241D1", //optional, specify color of calendar 2 events
-  },
-]
 
 export default function Feed() {
-  const history = useHistory()
-
-  useEffect(() => {
-    oauthSetup(sendToLanding)
-  })
-
-  const sendToLanding = () => {
-    if (!isAuthorized()) {
-      history.push("/")
-    }
-  }
-
+  const [email, setEmail] = useState<string | null>(null)
   const [weather, setWeather] = useState<WeatherRes[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
-  const id = useParams()
+  const history = useHistory()
 
   const getWeather = async (args: WeatherArgs) => {
     try {
       const res = await fetch(
-        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`
+        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`,
       )
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
         setWeather(data)
-
       }
     } catch (e) {
-      console.error("Server unreachable")
+      console.error('Server unreachable')
     }
   }
-  //component onMount similar
-  useEffect(() => {
-    console.log("The dynamic id: ", id)
-    //check if user allowed access to geolocation
-    if ("geolocation" in navigator) {
-      console.log("Available")
-    } else {
-      console.log("Not Available")
-    }
 
-    navigator.geolocation.getCurrentPosition(function (position) {
-      getWeather(position.coords)
-      console.log("Latitude is :", position.coords.latitude)
-      console.log("Longitude is :", position.coords.longitude)
+  const sendToLanding = () => {
+    if (!isAuthorized()) {
+      history.push('/')
+    }
+  }
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) =>
+      getWeather(position.coords),
+    )
+    oauthSetup(() => {
+      sendToLanding()
+      setEmail(getEmail())
     })
   }, [])
 
+  if (!email) {
+    return <Loading />
+  }
+
+  const calendars = [
+    {
+      calendarId: email,
+    },
+  ]
+
   function createvent(e) {
-    //e.preventDefault();
-    //console.log("The create event btn was clicked.");
     setShowAlert(false)
     setShowCreateModal(true)
   }
 
   function sendurl(e) {
-    //e.preventDefault();
-    //console.log("The invite btn was clicked.");
     setShowAlert(false)
     setShowInviteModal(true)
   }
 
   function handleCreateSubmit(e) {
-    //console.log("submit the form");
     e.preventDefault()
 
     let startdate = e.target.elements.startdate?.value
@@ -101,28 +86,20 @@ export default function Feed() {
     let event_name = e.target.elements.event_name?.value
     let event_location = e.target.elements.event_location?.value
 
-    if (startdate == "" || enddate == "") {
+    if (startdate === '' || enddate === '') {
       setShowAlert(true)
     } else if (startdate > enddate) {
       setShowAlert(true)
-    } else if (startdate == enddate && starttime > endtime) {
+    } else if (startdate === enddate && starttime > endtime) {
       setShowAlert(true)
     } else {
       //example output: 2021-04-16 10:24 2021-04-16 22:29 study 411 CAS344
-      if (event_name == "") {
-        event_name = "New Event"
+      if (event_name === '') {
+        event_name = 'New Event'
       }
-      if (event_location == "") {
-        event_location = "Home"
+      if (event_location === '') {
+        event_location = 'Home'
       }
-      console.log(
-        startdate,
-        starttime,
-        enddate,
-        endtime,
-        event_name,
-        event_location
-      )
 
       createSingleEvent(
         startdate,
@@ -130,36 +107,48 @@ export default function Feed() {
         enddate,
         endtime,
         event_name,
-        event_location
+        event_location,
       )
 
       setShowCreateModal(false)
     }
   }
 
-  function handleInviteSubmit(e) {
-    console.log("submit the invitation form")
+  async function handleInviteSubmit(e) {
+    console.log('submit the invitation form')
     e.preventDefault()
 
-    let startdate = e.target.elements.startdate?.value
-    let enddate = e.target.elements.enddate?.value
-    let event_name = e.target.elements.event_name?.value
-    let event_location = e.target.elements.event_location?.value
+    let start = e.target.elements.startdate?.value
+    let end = e.target.elements.enddate?.value
+    let name = e.target.elements.event_name?.value
+    let location = e.target.elements.event_location?.value
 
-    if (startdate == "" || enddate == "") {
+    if (start === '' || end === '') {
       setShowAlert(true)
-    } else if (startdate > enddate) {
+    } else if (start > end) {
       setShowAlert(true)
     } else {
-      if (event_name == "") {
-        event_name = "New Event"
+      if (name === '') {
+        name = 'New Event'
       }
-      if (event_location == "") {
-        event_location = "Home"
+      if (location === '') {
+        location = 'Home'
       }
       //example output: 2021-04-16 2021-04-16 study 411 CAS344
-      console.log(startdate, enddate, event_name, event_location)
-      setShowInviteModal(false)
+      await fetch(`${API_URL}/api/calendar/invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          start,
+          end,
+          location,
+          name,
+          email,
+        }),
+      })
+      // setShowInviteModal(false)
     }
   }
 

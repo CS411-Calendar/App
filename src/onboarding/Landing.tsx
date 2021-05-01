@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import {
-  BrowserRouter as Router,
-  Route,
-  Redirect,
-  useHistory,
-} from 'react-router-dom'
+import { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import { oauthSetup, login, isAuthorized } from '../lib/auth'
 // import styles from "Landing.css"
 import 'tailwindcss/tailwind.css'
-import Feed from '../feed'
 import './landing.css'
-import { Link } from 'react-router-dom'
 import background from '../img/calendar-wallpaper.jpg'
 
 function Landing() {
