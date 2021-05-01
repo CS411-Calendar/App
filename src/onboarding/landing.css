@@ -1,0 +1,22 @@
+.landingHeader{
+    padding-top: 40vh;
+    width: 700px;
+    font-weight: bold;
+    font-size: 50px;
+    text-align: center;
+}
+
+.loginButton{
+    font-size: 25px;
+    width: 300px;
+    background-color: azure;
+    border-radius: 35%;
+    text-align: center;
+    padding: 10px 10px 10px 10px;
+    margin: 25px 0px 0px 200px;
+    align-content: start;
+}
+
+.linkStyle{
+    width: 300px;
+}
