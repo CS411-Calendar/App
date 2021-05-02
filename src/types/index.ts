@@ -7,3 +7,8 @@ export type Invite = {
   end: Date
   location: string
 }
+
+export type User = {
+  id: string
+  createdAt: Date
+}

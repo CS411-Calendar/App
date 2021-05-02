@@ -8,7 +8,7 @@ import { CreateModal } from '../components/modal'
 import { createSingleEvent } from '../lib/event'
 import { WeatherRes } from '../feed'
 import { API_URL } from '../constants'
-import { Invite } from '../types'
+import { Invite, User } from '../types'
 
 type WeatherArgs = {
   latitude: number
@@ -19,6 +19,7 @@ type ParamsType = { id: string }
 export default function InviteScreen() {
   const [weather, setWeather] = useState<WeatherRes[] | undefined>()
   const [invite, setInvite] = useState<Invite | null>(null)
+  const [attendees, setAttendees] = useState<User[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const { id } = useParams<ParamsType>()
@@ -30,9 +31,16 @@ export default function InviteScreen() {
     oauthSetup()
     fetch(`${API_URL}/api/calendar/invite/${id}`).then(async (res) => {
       if (res.status === 200) {
-        const data: Invite = await res.json()
-        console.log('i know lul', data)
-        setInvite(data)
+        const data: {
+          inviteJson?: Invite
+          attendeeJson?: User[]
+        } = await res.json()
+        if (data.attendeeJson) {
+          setAttendees(data.attendeeJson)
+        }
+        if (data.inviteJson) {
+          setInvite(data.inviteJson)
+        }
       } else {
         // display error
       }
