@@ -3,11 +3,12 @@ import { useParams } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import apiGoogleconfig from '../config/apiGoogleconfig.json'
 import { oauthSetup, isAuthorized, login, getEmail } from '../lib/auth'
-import {UserIcon} from "@heroicons/react/solid";
-import {CreateModal} from "../components/modal";
-import {createSingleEvent} from "../lib/event";
-import {WeatherRes} from "../feed";
-import {API_URL} from "../constants";
+import { UserIcon } from '@heroicons/react/solid'
+import { CreateModal } from '../components/modal'
+import { createSingleEvent } from '../lib/event'
+import { WeatherRes } from '../feed'
+import { API_URL } from '../constants'
+import { Invite } from '../types'
 
 type WeatherArgs = {
   latitude: number
@@ -15,22 +16,33 @@ type WeatherArgs = {
 }
 
 type ParamsType = { id: string }
-export default function Invite() {
+export default function InviteScreen() {
   const [weather, setWeather] = useState<WeatherRes[] | undefined>()
+  const [invite, setInvite] = useState<Invite | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
+  const { id } = useParams<ParamsType>()
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
-        getWeather(position.coords),
+      getWeather(position.coords),
     )
     oauthSetup()
+    fetch(`${API_URL}/api/calendar/invite/${id}`).then(async (res) => {
+      if (res.status === 200) {
+        const data: Invite = await res.json()
+        console.log('i know lul', data)
+        setInvite(data)
+      } else {
+        // display error
+      }
+    })
   }, [])
 
   const getWeather = async (args: WeatherArgs) => {
     try {
       const res = await fetch(
-          `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`,
+        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`,
       )
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
@@ -46,7 +58,7 @@ export default function Invite() {
   const acceptInviteClick = async () => {
     if (isAuthorized()) {
       // Extract user email
-      console.log("User email: ", getEmail())
+      console.log('User email: ', getEmail())
     } else {
       await login()
       // Extract user email
@@ -54,10 +66,6 @@ export default function Invite() {
     }
     setAcceptedInvite(true)
   }
-
-  // params stuff
-  const params = useParams<ParamsType>()
-  console.log(params)
 
   // info to display calendar
   const API_KEY = apiGoogleconfig.apiKey
@@ -99,12 +107,12 @@ export default function Invite() {
       }
 
       createSingleEvent(
-          startdate,
-          starttime,
-          enddate,
-          endtime,
-          event_name,
-          event_location,
+        startdate,
+        starttime,
+        enddate,
+        endtime,
+        event_name,
+        event_location,
       )
 
       setShowCreateModal(false)
@@ -119,33 +127,39 @@ export default function Invite() {
       </div>
       <div className="fixed left-0 top-1/2">
         <button
-            className="bg-gray-300 py-2 px-2 rounded border-2 grid"
-            onClick={createvent}
+          className="bg-gray-300 py-2 px-2 rounded border-2 grid"
+          onClick={createvent}
         >
           <UserIcon className="text-blue-500 h-7 w-7 justify-self-center"></UserIcon>
           <span className="text-xs">Create Group Event</span>
         </button>
         {showCreateModal ? (
-            <CreateModal
-                {...{
-                  handleCreateSubmit,
-                  setShowAlert,
-                  setShowCreateModal,
-                  showAlert,
-                  weather,
-                }}
-            />
+          <CreateModal
+            {...{
+              handleCreateSubmit,
+              setShowAlert,
+              setShowCreateModal,
+              showAlert,
+              weather,
+            }}
+          />
         ) : null}
       </div>
       <div>
-        The ID of this page is: <b>{params.id}</b>
+        The ID of this page is: <b>{id}</b>
       </div>
       <div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
         {!acceptedInvite && (
           <>
-            <div className={"fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded"}>
-              The event will occur between May 5, 2021 to June 10, 2021.
-            </div>
+            {invite && (
+              <div
+                className={
+                  'fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded'
+                }
+              >
+                The event will occur between {invite.start} to {invite.end}.
+              </div>
+            )}
             <button
               onClick={(e) => {
                 acceptInviteClick()
@@ -158,15 +172,19 @@ export default function Invite() {
         )}
         {acceptedInvite && (
           <>
-            <div className={"fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded"}>
+            <div
+              className={
+                'fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded'
+              }
+            >
               The event will occur between May 5, 2021 to June 10, 2021.
             </div>
-            <h1 className={"fixed bottom-5 bg-white"}>
+            <h1 className={'fixed bottom-5 bg-white'}>
               {' '}
               Thank you for accepting the invite from&nbsp;
               {/* change this part to show the host */}
-              {calendars[0].calendarId}. The owner will send you a calendar invite
-              via E-mail shortly once all attendees accept the invite.
+              {calendars[0].calendarId}. The owner will send you a calendar
+              invite via E-mail shortly once all attendees accept the invite.
             </h1>
           </>
         )}
