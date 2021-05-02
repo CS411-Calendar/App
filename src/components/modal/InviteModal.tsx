@@ -9,7 +9,7 @@ type Props = {
   setShowInviteModal: (show: boolean) => void
   setShowAlert: (alert: boolean) => void
   showAlert: boolean
-  weather: WeatherRes[]
+  weather: WeatherRes[] | undefined
   email: string
 }
 
@@ -62,7 +62,7 @@ export function InviteModal({
       }
     }
   }
-  var json = weather;
+  var json = weather
   var weatherStart: string, weatherEnd: string
 
   const [weatherStartInfo, setWeatherStartInfo] = useState('')
@@ -80,7 +80,7 @@ export function InviteModal({
     var startDate = new Date(dateString)
     startDate.setTime(startDate.getTime() + 24 * 60 * 60 * 1000)
 
-    if (Number(daysUntilTarget(startDate)) < 16) {
+    if (Number(daysUntilTarget(startDate)) < 16 && json) {
       weatherStart = `${
         json[Number(daysUntilTarget(startDate))].temperature
       }°F and ${json[Number(daysUntilTarget(startDate))].weather}`
@@ -97,7 +97,7 @@ export function InviteModal({
     var startDate = new Date(dateString)
     startDate.setTime(startDate.getTime() + 24 * 60 * 60 * 1000)
 
-    if (Number(daysUntilTarget(startDate)) < 16) {
+    if (Number(daysUntilTarget(startDate)) < 16 && json) {
       weatherEnd = `${
         json[Number(daysUntilTarget(startDate))].temperature
       }°F and ${json[Number(daysUntilTarget(startDate))].weather}`

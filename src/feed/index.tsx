@@ -8,6 +8,7 @@ import { createSingleEvent } from '../lib/event'
 import { oauthSetup, isAuthorized, getEmail } from '../lib/auth'
 import apiGoogleconfig from '../config/apiGoogleconfig.json'
 import { Loading } from '../components/EmptyState'
+
 type WeatherArgs = {
   latitude: number
   longitude: number
@@ -20,7 +21,7 @@ const API_KEY = apiGoogleconfig.apiKey
 
 export default function Feed() {
   const [email, setEmail] = useState<string | null>(null)
-  const [weather, setWeather] = useState<WeatherRes[]>([])
+  const [weather, setWeather] = useState<WeatherRes[] | undefined>()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
@@ -34,7 +35,7 @@ export default function Feed() {
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
         setWeather(data)
-        console.log("Weather Server: ", weather)
+        console.log('Weather Server: ', weather)
       }
     } catch (e) {
       console.error('Server unreachable')
