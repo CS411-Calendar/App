@@ -150,14 +150,16 @@ export default function InviteScreen() {
         {/* Potentially add more attributes to change starting month / date? */}
         <Calendar apiKey={API_KEY} calendars={calendars} />
       </div>
-      <div className="fixed left-0 top-1/2">
-        <button
-          className="bg-gray-300 py-2 px-2 rounded border-2 grid"
-          onClick={createvent}
-        >
-          <UserIcon className="text-blue-500 h-7 w-7 justify-self-center"></UserIcon>
-          <span className="text-xs">Create Group Event</span>
-        </button>
+      <div className="fixed left-0 top-1/2 grid grid-rows-2">
+        {invite && getEmail() === invite.to && (
+          <button
+            className="bg-gray-300 py-2 px-2 rounded border-2 grid"
+            onClick={createvent}
+          >
+            <UserIcon className="text-blue-500 h-7 w-7 justify-self-center"></UserIcon>
+            <span className="text-xs">Create Group Event</span>
+          </button>
+        )}
         {showCreateModal ? (
           <CreateModal
             {...{
@@ -169,6 +171,11 @@ export default function InviteScreen() {
             }}
           />
         ) : null}
+        {invite && (
+          <div className="flex flex-col bg-gray-300 py-2 px-2 rounded border-2 text-xs">
+              <h1> Attendee Emails: </h1>
+            {[invite.to, ...(attendees.map(attendee => attendee.id))].map((email, i)=><div key={i}>{email}</div>)}
+          </div>)}
       </div>
       <div>
         The ID of this page is: <b>{id}</b>
