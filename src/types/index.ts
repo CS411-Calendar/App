@@ -6,6 +6,7 @@ export type Invite = {
   start: Date
   end: Date
   location: string
+  to: string
 }
 
 export type User = {
