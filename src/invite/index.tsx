@@ -1,45 +1,48 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import Calendar from '@ericz1803/react-google-calendar'
-import apiGoogleconfig from '../config/apiGoogleconfig.json'
-import { oauthSetup, isAuthorized, login, getEmail } from '../lib/auth'
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import Calendar from "@ericz1803/react-google-calendar"
+import apiGoogleconfig from "../config/apiGoogleconfig.json"
+import { oauthSetup, isAuthorized, login, getEmail } from "../lib/auth"
 
+// Define type for the params of the invite page, used to identify each invites in the DB
 type ParamsType = { id: string }
 export default function Invite() {
+  // Initialize params
+  const params = useParams<ParamsType>()
+  // OAuth setup code
   useEffect(() => {
     oauthSetup()
   }, [])
-
+  // Setup acceptedInvite state, used to display thank you text after user accepts invite
   const [acceptedInvite, setAcceptedInvite] = useState(false)
+  // Helper
+  //   Handles accept invite clicks by extracting user email and updating state.
   const acceptInviteClick = async () => {
     if (isAuthorized()) {
       // Extract user email
       console.log(getEmail())
+      setAcceptedInvite(true)
     } else {
       await login()
       // Extract user email
       console.log(getEmail())
+      if (isAuthorized()) {
+        setAcceptedInvite(true)
+      }
     }
-    setAcceptedInvite(true)
   }
-
-  // params stuff
-  const params = useParams<ParamsType>()
-  console.log(params)
-
-  // info to display calendar
+  // TODO: Info to display calendar, need to make it so that it pulls data from DB and updates the calendar
   const API_KEY = apiGoogleconfig.apiKey
   let calendars = [
     {
-      calendarId: 'u.s.apple1102@gmail.com',
-      color: '#B241D1', //optional, specify color of calendar 2 events
+      calendarId: "u.s.apple1102@gmail.com",
+      color: "#B241D1", //optional, specify color of calendar 2 events
     },
   ]
 
   return (
     <div>
       <div>
-        {/* Potentially add more attributes to change starting month / date? */}
         <Calendar apiKey={API_KEY} calendars={calendars} />
       </div>
       <div>
@@ -58,9 +61,9 @@ export default function Invite() {
         )}
         {acceptedInvite && (
           <h1>
-            {' '}
+            {" "}
             Thank you for accepting the invite from&nbsp;
-            {/* change this part to show the host */}
+            {/* TODO: change this part to show the host */}
             {calendars[0].calendarId}. The owner will send you a calendar invite
             via E-mail shortly once all attendees accept the invite.
           </h1>
