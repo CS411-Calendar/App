@@ -2,16 +2,39 @@ import { gapi } from "gapi-script"
 import apiGoogleconfig from "../config/apiGoogleconfig.json"
 import { isAuthorized } from "../lib/auth"
 
-export const initClient = () =>
-  gapi.client.init({
-    apiKey: apiGoogleconfig.apiKey,
-    clientId: apiGoogleconfig.clientId,
-    discoveryDocs:
-      "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-    scope: "https://www.googleapis.com/auth/calendar",
+// Helper
+//   List the next 10 upcoming events
+export const listUpcoming = async () => {
+  if (!isAuthorized()) {
+    return []
+  }
+  const response = await gapi.client.calendar.events.list({
+    calendarId: "primary",
+    timeMin: new Date().toISOString(),
+    showDeleted: false,
+    singleEvents: true,
+    maxResults: 10,
+    orderBy: "startTime",
   })
-
-// List all events occuring over the next 14 days from now
+  const events = response.result.items
+  // To display individual events nicely on console, if needed
+  // console.log("Upcoming events:")
+  // if (events.length > 0) {
+  //   for (var i = 0; i < events.length; i++) {
+  //     var event = events[i]
+  //     var when = event.start.dateTime
+  //     if (!when) {
+  //       when = event.start.date
+  //     }
+  //     console.log(event.summary + " (" + when + ")")
+  //   }
+  // } else {
+  //   console.log("No upcoming events found.")
+  // }
+  return events
+}
+// Helper
+//  List all events occuring over the next 14 days from now
 export const list14daysEvents = () => {
   // Type definition for event response
   type EventResp = {
@@ -25,9 +48,8 @@ export const list14daysEvents = () => {
       self?: boolean
     }
   }
-
   if (isAuthorized()) {
-    // Get the events information
+    // Get info. about events occuring in the next 14 days
     gapi.client.calendar.events
       .list({
         calendarId: "primary",
@@ -41,12 +63,13 @@ export const list14daysEvents = () => {
       })
       .then(function (response) {
         var events_raw = response.result.items
+        // Initialize eventList, which will be returned
         var eventList: Array<EventResp> = []
 
         if (events_raw.length > 0) {
           for (var i = 0; i < events_raw.length; i++) {
             var event_raw = events_raw[i]
-            // cast the events into certain types
+            // Cast the events into EventResp type
             var event: EventResp = {
               created: new Date(event_raw.created),
               summary: event_raw.summary,
@@ -60,49 +83,52 @@ export const list14daysEvents = () => {
             }
             eventList.push(event)
           }
-          console.log("Event List:")
-          console.log(eventList)
-        } else {
-          console.log("No upcoming events found.")
         }
+        return eventList
       })
   } else {
-    console.log("Current Status: Logged Out")
+    return []
   }
 }
-
-// Create Event function
-// helper function to parse date and time
+// Helper
+//   Parse date, time and timezone  and return a DateTime object corresponding to each.
+//   Note: timeZone variable only takes timeZone strings (e.g. "America/New_York").
+// Example input:
+//   date = "2021-04-24"
+//   time = "09:50"
+//   timeZone = "America/New_York"
 function convertStringToDateTime(date, time, timeZone) {
-  // expected input example:
-  //     date = "2021-04-24"
-  //     time = "09:50"
   var date_split = date.split("-")
   var time_split = time.split(":")
+  // Initialize DateTime object with specified timeZone
   var dateTime = new Date(
     new Date().toLocaleString("en-US", { timeZone: timeZone })
   )
-
+  // Parse the date and time strings into ints
   for (var i = 0; i < date_split.length; i++) {
     date_split[i] = parseInt(date_split[i])
   }
-
   for (i = 0; i < time_split.length; i++) {
     time_split[i] = parseInt(time_split[i])
   }
+  // Set the date and time to specified values
   dateTime.setFullYear(date_split[0])
   dateTime.setDate(date_split[2])
   // Somehow the months counts from 0
   dateTime.setMonth(date_split[1] - 1)
   dateTime.setHours(time_split[0])
   dateTime.setMinutes(time_split[1])
-
   return dateTime
 }
-
-// Create event for single attendee
-// Example Use:
-// createEvent("2021-04-30", "09:50", "2021-04-30", "15:52", "testEvent", "Boston, MA")
+// Helper
+//   Create event for single attendee
+// Example input:
+//   eventStartDate = "2021-04-30"
+//   eventStartTime = "09:50"
+//   eventEndDate = "2021-04-30"
+//   eventEndTime =  "15:52"
+//   eventName = "testEvent"
+//   eventLocation = "Boston, MA"
 export const createSingleEvent = async (
   eventStartDate,
   eventStartTime,
@@ -113,7 +139,7 @@ export const createSingleEvent = async (
 ) => {
   if (isAuthorized()) {
     var timezone
-    // get time zone information associated to the user's calendar
+    // Get time zone information associated to the user's calendar
     await gapi.client.calendar.calendarList.get({ calendarId: "primary" }).then(
       function (response) {
         timezone = response.result.timeZone
@@ -124,7 +150,6 @@ export const createSingleEvent = async (
         console.log(reason)
       }
     )
-
     // Convert event start / end DateTime and time zone string into DateTime object
     var eventStartDateTime = convertStringToDateTime(
       eventStartDate,
@@ -136,7 +161,6 @@ export const createSingleEvent = async (
       eventEndTime,
       timezone
     )
-
     // Construct event details
     var event = {
       summary: eventName,
@@ -148,7 +172,6 @@ export const createSingleEvent = async (
         dateTime: eventEndDateTime.toISOString(),
       },
     }
-
     // Construct the claendar event insert request and execute it
     var request = gapi.client.calendar.events.insert({
       calendarId: "primary",
@@ -162,10 +185,16 @@ export const createSingleEvent = async (
   }
 }
 
-// INPUT: startDateTime, endDateTime, Location, Title, List of attendees (emails)
-// Create event for single attendee
-// Example Use:
-// createAttendeeEvent("2021-04-30", "09:50", "2021-04-30", "15:52", "testEvent", "Boston, MA", [ "test123@gmail.com", "test223@gmail.com", ... ])
+// Helper
+//   Create event for multiple attendees. Attendees should be specified by passing an array of attendee emails.
+// Example input:
+//   eventStartDate = "2021-04-30"
+//   eventStartTime = "09:50"
+//   eventEndDate = "2021-04-30"
+//   eventEndTime =  "15:52"
+//   eventName = "testEvent"
+//   eventLocation = "Boston, MA"
+//   attendees = [ "test123@gmail.com", "test223@gmail.com", ... ]
 export const createAttendeeEvent = async (
   eventStartDate: String,
   eventStartTime: String,
@@ -177,7 +206,7 @@ export const createAttendeeEvent = async (
 ) => {
   if (isAuthorized()) {
     var timezone
-    // get time zone information associated to the user's calendar
+    // Get time zone information associated to the user's calendar
     await gapi.client.calendar.calendarList.get({ calendarId: "primary" }).then(
       function (response) {
         timezone = response.result.timeZone
@@ -188,7 +217,6 @@ export const createAttendeeEvent = async (
         console.log(reason)
       }
     )
-
     // Convert event start / end DateTime and time zone string into DateTime object
     var eventStartDateTime = convertStringToDateTime(
       eventStartDate,
@@ -200,14 +228,10 @@ export const createAttendeeEvent = async (
       eventEndTime,
       timezone
     )
-
     // Construct attendee list
     const attendeeFormatted = attendees.map((attendee) => ({
       email: attendee,
     }))
-
-    // [ { email: "new@example.com"} ]
-
     // Construct event details
     var event = {
       summary: eventName,
@@ -220,7 +244,6 @@ export const createAttendeeEvent = async (
         dateTime: eventEndDateTime.toISOString(),
       },
     }
-
     // Construct the claendar event insert request and execute it
     var request = gapi.client.calendar.events.insert({
       calendarId: "primary",
