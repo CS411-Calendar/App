@@ -1,8 +1,8 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Landing from './onboarding/Landing'
-import Feed from './feed'
-import Invite from './invite'
-import 'tailwindcss/tailwind.css'
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
+import Landing from "./onboarding/Landing"
+import Feed from "./feed"
+import Invite from "./invite"
+import "tailwindcss/tailwind.css"
 
 function App() {
   return (
