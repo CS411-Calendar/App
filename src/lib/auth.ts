@@ -1,7 +1,9 @@
 import { gapi } from "gapi-script"
 import apiGoogleconfig from "../config/apiGoogleconfig.json"
 
-export const initClient = () =>
+// Initalizes Google OAuth client
+//   Only used by isAuthorized, thus no need to export as there should be no direct use of this function
+const initClient = () =>
   gapi.client.init({
     apiKey: apiGoogleconfig.apiKey,
     clientId: apiGoogleconfig.clientId,
@@ -10,59 +12,43 @@ export const initClient = () =>
     ],
     scope: "https://www.googleapis.com/auth/calendar",
   })
-
-export const getEmail = () => {
-  return gapi.auth2
-    .getAuthInstance()
-    .currentUser.get()
-    .getBasicProfile()
-    .getEmail()
-}
-
-export const isAuthorized = () => {
-  console.log(
-    gapi.auth2.getAuthInstance().isSignedIn.get()
-      ? "Authorized"
-      : "Not Authorized"
-  )
-  return gapi.auth2.getAuthInstance().isSignedIn.get()
-}
+// OAuth Setup code
+//   Every page which references gapi object must run this function in useEffect
+//   Optional callback function can be added as argument. The callback function will
+//   asynchronously execute after the client initialization is fully complete
 export const oauthSetup = (f: () => void = () => {}) => {
   gapi.load("client:auth2", async () => {
     await initClient()
     f()
   })
 }
+// Helper
+//   Returns boolean value representing whether the user is authorized through OAuth
+//   or not.
+export const isAuthorized = () => {
+  // console.log(
+  //   gapi.auth2.getAuthInstance().isSignedIn.get()
+  //     ? "Authorized"
+  //     : "Not Authorized"
+  // )
+  return gapi.auth2.getAuthInstance().isSignedIn.get()
+}
+// OAuth sign-out function
 export const logout = () => gapi.auth2.getAuthInstance().signOut()
+// OAuth sign-in function
+//   Automatically opens a new tab/page with OAuth consent screen
 export const login = () => gapi.auth2.getAuthInstance().signIn()
-export const listUpcoming = async () => {
-  if (!isAuthorized()) {
-    return []
-  }
-  const response = await gapi.client.calendar.events.list({
-    calendarId: "primary",
-    timeMin: new Date().toISOString(),
-    showDeleted: false,
-    singleEvents: true,
-    maxResults: 10,
-    orderBy: "startTime",
-  })
-
-  const events = response.result.items
-  console.log("Upcoming events:")
-
-  if (events.length > 0) {
-    for (var i = 0; i < events.length; i++) {
-      var event = events[i]
-      var when = event.start.dateTime
-      if (!when) {
-        when = event.start.date
-      }
-      console.log(event.summary + " (" + when + ")")
-    }
+// Helper
+//   Returns the e-mail address of the user currently logged in through OAuth
+export const getEmail = () => {
+  if (isAuthorized()) {
+    return gapi.auth2
+      .getAuthInstance()
+      .currentUser.get()
+      .getBasicProfile()
+      .getEmail()
   } else {
-    console.log("No upcoming events found.")
+    // Potentially change based on what return value will be better
+    return ""
   }
-
-  return events
 }
