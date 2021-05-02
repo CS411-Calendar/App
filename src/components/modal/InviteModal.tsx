@@ -1,65 +1,130 @@
-import {WeatherRes} from "../../feed"
-import {useState} from "react";
+import { WeatherRes } from '../../feed'
+import { useState } from 'react'
 import './createModal.css'
+import { API_URL, WEBSITE_URL } from '../../constants'
+import { ClipboardCopyIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
+import { Invite } from '../../types'
 
 type Props = {
   setShowInviteModal: (show: boolean) => void
-  handleInviteSubmit: (e: any) => void
   setShowAlert: (alert: boolean) => void
   showAlert: boolean
   weather: WeatherRes[]
+  email: string
 }
 
 export function InviteModal({
   setShowInviteModal,
-  handleInviteSubmit,
   showAlert,
   setShowAlert,
   weather,
+  email,
 }: Props) {
+  const [link, setLink] = useState('')
+  const [copied, setCopied] = useState(false)
+  async function handleInviteSubmit(e) {
+    console.log('submit the invitation form')
+    e.preventDefault()
 
+    let start = e.target.elements.startdate?.value
+    let end = e.target.elements.enddate?.value
+    let name = e.target.elements.event_name?.value
+    let location = e.target.elements.event_location?.value
+
+    if (start === '' || end === '') {
+      setShowAlert(true)
+    } else if (start > end) {
+      setShowAlert(true)
+    } else {
+      if (name === '') {
+        name = 'New Event'
+      }
+      if (location === '') {
+        location = 'Home'
+      }
+      //example output: 2021-04-16 2021-04-16 study 411 CAS344
+      const res = await fetch(`${API_URL}/api/calendar/invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          start,
+          end,
+          location,
+          name,
+          email,
+        }),
+      })
+      if (res.status === 201) {
+        const invite = await res.json()
+        setLink(`${WEBSITE_URL}/invite/${invite.id}`)
+      }
+    }
+  }
   // var json = weather;
-  var json = [{"temperature":"75.11","weather":"light rain"},{"temperature":"67.06","weather":"light rain"},{"temperature":"63.77","weather":"moderate rain"},{"temperature":"51.71","weather":"sky is clear"},{"temperature":"65.64","weather":"light rain"},{"temperature":"56.98","weather":"light rain"},{"temperature":"55.69","weather":"moderate rain"},{"temperature":"56.1","weather":"light rain"},{"temperature":"61.02","weather":"overcast clouds"},{"temperature":"51.76","weather":"light rain"},{"temperature":"60.87","weather":"light rain"},{"temperature":"52.12","weather":"light rain"},{"temperature":"50.9","weather":"light rain"},{"temperature":"65.05","weather":"broken clouds"},{"temperature":"82.09","weather":"light rain"},{"temperature":"75.96","weather":"light rain"},{"temperature":"55","weather":"moderate rain"}];
-  var weatherStart:string, weatherEnd:string
+  var json = [
+    { temperature: '75.11', weather: 'light rain' },
+    { temperature: '67.06', weather: 'light rain' },
+    { temperature: '63.77', weather: 'moderate rain' },
+    { temperature: '51.71', weather: 'sky is clear' },
+    { temperature: '65.64', weather: 'light rain' },
+    { temperature: '56.98', weather: 'light rain' },
+    { temperature: '55.69', weather: 'moderate rain' },
+    { temperature: '56.1', weather: 'light rain' },
+    { temperature: '61.02', weather: 'overcast clouds' },
+    { temperature: '51.76', weather: 'light rain' },
+    { temperature: '60.87', weather: 'light rain' },
+    { temperature: '52.12', weather: 'light rain' },
+    { temperature: '50.9', weather: 'light rain' },
+    { temperature: '65.05', weather: 'broken clouds' },
+    { temperature: '82.09', weather: 'light rain' },
+    { temperature: '75.96', weather: 'light rain' },
+    { temperature: '55', weather: 'moderate rain' },
+  ]
+  var weatherStart: string, weatherEnd: string
 
-  const [weatherStartInfo, setWeatherStartInfo] = useState("")
-  const [weatherEndInfo, setWeatherEndInfo] = useState("")
+  const [weatherStartInfo, setWeatherStartInfo] = useState('')
+  const [weatherEndInfo, setWeatherEndInfo] = useState('')
 
   const daysUntilTarget = (target: Date) => {
     const today = new Date()
-    if (target < today)
-      return null
+    if (target < today) return null
     const delta = (target.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)
     return Math.floor(delta)
   }
 
-  function handleStartDateChange(e){
+  function handleStartDateChange(e) {
     const dateString: string = e.target.value
     var startDate = new Date(dateString)
-    startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
+    startDate.setTime(startDate.getTime() + 24 * 60 * 60 * 1000)
 
-    if(Number(daysUntilTarget(startDate)) < 16) {
-      weatherStart = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
-    }else{
+    if (Number(daysUntilTarget(startDate)) < 16) {
+      weatherStart = `${
+        json[Number(daysUntilTarget(startDate))].temperature
+      }°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    } else {
       //no weather data available
-      weatherStart = "No weather data available"
+      weatherStart = 'No weather data available'
     }
-    console.log("JSON Data Start temperature: ", weatherStart)
+    console.log('JSON Data Start temperature: ', weatherStart)
     setWeatherStartInfo(weatherStart)
   }
 
-  function handleEndDateChange(e){
+  function handleEndDateChange(e) {
     const dateString: string = e.target.value
     var startDate = new Date(dateString)
-    startDate.setTime(startDate.getTime()+(24 * 60 * 60 * 1000))
+    startDate.setTime(startDate.getTime() + 24 * 60 * 60 * 1000)
 
-    if(Number(daysUntilTarget(startDate)) < 16) {
-      weatherEnd = `${json[Number(daysUntilTarget(startDate))].temperature}°F and ${json[Number(daysUntilTarget(startDate))].weather}`
-    }else{
+    if (Number(daysUntilTarget(startDate)) < 16) {
+      weatherEnd = `${
+        json[Number(daysUntilTarget(startDate))].temperature
+      }°F and ${json[Number(daysUntilTarget(startDate))].weather}`
+    } else {
       //no weather data available
-      weatherEnd = "No weather data available"
+      weatherEnd = 'No weather data available'
     }
-    console.log("JSON Data End temperature: ", weatherEnd)
+    console.log('JSON Data End temperature: ', weatherEnd)
     setWeatherEndInfo(weatherEnd)
   }
 
@@ -96,7 +161,7 @@ export function InviteModal({
                     onChange={handleStartDateChange}
                   />
                 </div>
-                <div className={"weatherStartInfo"}> {weatherStartInfo} </div>
+                <div className={'weatherStartInfo'}> {weatherStartInfo} </div>
                 <div>
                   <label htmlFor="password">End Date</label>
                   <input
@@ -107,7 +172,7 @@ export function InviteModal({
                     onChange={handleEndDateChange}
                   />
                 </div>
-                <div className={"weatherEndInfo"}> {weatherEndInfo} </div>
+                <div className={'weatherEndInfo'}> {weatherEndInfo} </div>
                 <div>
                   <label htmlFor="password">Event Name</label>
                   <input
@@ -126,7 +191,27 @@ export function InviteModal({
                     placeholder="Where the event will be hold?"
                   />
                 </div>
-
+                {link && (
+                  <div className="flex justify-center text-center items-center py-2">
+                    <div className="flex flex-row px-6 py-2 bg-gray-100 rounded-lg items-center justify-center">
+                      <div className="w-full ">{link}</div>
+                      {copied ? (
+                        <ClipboardCheckIcon
+                          onClick={() => navigator.clipboard.writeText(link)}
+                          className="w-8 h-8 ml-6"
+                        />
+                      ) : (
+                        <ClipboardCopyIcon
+                          onClick={() => {
+                            setCopied(true)
+                            navigator.clipboard.writeText(link)
+                          }}
+                          className="w-8 h-8 ml-6"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-center items-center mt-6">
                   <button
                     className={`bg-green py-2 px-4 text-sm text-black rounded border border-green focus:outline-none focus:border-green-dark`}

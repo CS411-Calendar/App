@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Router, useHistory } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import { API_URL } from '../constants'
 import { InviteModal, CreateModal } from '../components/modal'
@@ -114,44 +114,6 @@ export default function Feed() {
     }
   }
 
-  async function handleInviteSubmit(e) {
-    console.log('submit the invitation form')
-    e.preventDefault()
-
-    let start = e.target.elements.startdate?.value
-    let end = e.target.elements.enddate?.value
-    let name = e.target.elements.event_name?.value
-    let location = e.target.elements.event_location?.value
-
-    if (start === '' || end === '') {
-      setShowAlert(true)
-    } else if (start > end) {
-      setShowAlert(true)
-    } else {
-      if (name === '') {
-        name = 'New Event'
-      }
-      if (location === '') {
-        location = 'Home'
-      }
-      //example output: 2021-04-16 2021-04-16 study 411 CAS344
-      await fetch(`${API_URL}/api/calendar/invite`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          start,
-          end,
-          location,
-          name,
-          email,
-        }),
-      })
-      // setShowInviteModal(false)
-    }
-  }
-
   return (
     <div>
       <div>
@@ -189,8 +151,8 @@ export default function Feed() {
               setShowAlert,
               setShowInviteModal,
               showAlert,
-              handleInviteSubmit,
               weather,
+              email,
             }}
           />
         ) : null}
