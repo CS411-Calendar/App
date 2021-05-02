@@ -26,6 +26,7 @@ export const oauthSetup = (f: () => void = () => {}) => {
 //   Returns boolean value representing whether the user is authorized through OAuth
 //   or not.
 export const isAuthorized = () => {
+  // Display authorization status in console for maintainance, if needed
   // console.log(
   //   gapi.auth2.getAuthInstance().isSignedIn.get()
   //     ? "Authorized"

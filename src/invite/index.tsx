@@ -6,6 +6,9 @@ import { oauthSetup, isAuthorized, login, getEmail } from "../lib/auth"
 
 // Define type for the params of the invite page, used to identify each invites in the DB
 type ParamsType = { id: string }
+// Define API Key
+const API_KEY = apiGoogleconfig.apiKey
+
 export default function Invite() {
   // Initialize params
   const params = useParams<ParamsType>()
@@ -32,7 +35,6 @@ export default function Invite() {
     }
   }
   // TODO: Info to display calendar, need to make it so that it pulls data from DB and updates the calendar
-  const API_KEY = apiGoogleconfig.apiKey
   let calendars = [
     {
       calendarId: "u.s.apple1102@gmail.com",

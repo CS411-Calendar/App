@@ -1,5 +1,4 @@
 import { gapi } from "gapi-script"
-import apiGoogleconfig from "../config/apiGoogleconfig.json"
 import { isAuthorized } from "../lib/auth"
 
 // Helper
@@ -184,7 +183,6 @@ export const createSingleEvent = async (
     console.log("Not Logged In...")
   }
 }
-
 // Helper
 //   Create event for multiple attendees. Attendees should be specified by passing an array of attendee emails.
 // Example input:

@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
-import { Router, useHistory } from 'react-router-dom'
-import Calendar from '@ericz1803/react-google-calendar'
-import { API_URL } from '../constants'
-import { InviteModal, CreateModal } from '../components/modal'
-import { UserIcon, UserGroupIcon } from '@heroicons/react/solid'
-import { createSingleEvent } from '../lib/event'
-import { oauthSetup, isAuthorized, getEmail } from '../lib/auth'
-import apiGoogleconfig from '../config/apiGoogleconfig.json'
-import { Loading } from '../components/EmptyState'
+import { useEffect, useState } from "react"
+import { useHistory } from "react-router-dom"
+import Calendar from "@ericz1803/react-google-calendar"
+import { API_URL } from "../constants"
+import { InviteModal, CreateModal } from "../components/modal"
+import { UserIcon, UserGroupIcon } from "@heroicons/react/solid"
+import { createSingleEvent } from "../lib/event"
+import { oauthSetup, isAuthorized, getEmail } from "../lib/auth"
+import apiGoogleconfig from "../config/apiGoogleconfig.json"
+import { Loading } from "../components/EmptyState"
 
+// Define some types
 type WeatherArgs = {
   latitude: number
   longitude: number
@@ -17,78 +18,85 @@ export type WeatherRes = {
   temperature: number
   weather: string
 }
+// Define API Key
 const API_KEY = apiGoogleconfig.apiKey
 
 export default function Feed() {
+  // State variable setup
   const [email, setEmail] = useState<string | null>(null)
   const [weather, setWeather] = useState<WeatherRes[] | undefined>()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const history = useHistory()
-
-  const getWeather = async (args: WeatherArgs) => {
-    try {
-      const res = await fetch(
-        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`,
-      )
-      if (res.status === 200) {
-        const data: WeatherRes[] = await res.json()
-        setWeather(data)
-        console.log('Weather Server: ', weather)
-      }
-    } catch (e) {
-      console.error('Server unreachable')
-    }
-  }
-
-  const sendToLanding = () => {
-    if (!isAuthorized()) {
-      history.push('/')
-    }
-  }
-
+  // get the weather info and setup OAuth, will send user back to landing page if not auth-ed
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
-      getWeather(position.coords),
+      getWeather(position.coords)
     )
     oauthSetup(() => {
       sendToLanding()
       setEmail(getEmail())
     })
   }, [])
-
+  // Helper
+  //   Get Weather information through Weather API using location data from browser
+  const getWeather = async (args: WeatherArgs) => {
+    try {
+      const res = await fetch(
+        `${API_URL}/weather?lat=${args.latitude}&long=${args.longitude}`
+      )
+      if (res.status === 200) {
+        const data: WeatherRes[] = await res.json()
+        setWeather(data)
+        console.log("Weather Server: ", weather)
+      }
+    } catch (e) {
+      console.error("Server unreachable")
+    }
+  }
+  // Helper
+  //   Send user back to landing page if not authenticated through OAuth
+  const sendToLanding = () => {
+    if (!isAuthorized()) {
+      history.push("/")
+    }
+  }
+  // If no email is defined (e.g. OAuth takes too long to get email, is not authroized)
+  // show the user loading page while redirecting to landing page
   if (!email) {
     return <Loading />
   }
-
   const calendars = [
     {
       calendarId: email,
     },
   ]
-
+  // Helper
+  //   Handles personal event creation
   function createvent(e) {
     setShowAlert(false)
     setShowCreateModal(true)
   }
-
+  // Helper
+  //   Handles inivitation creation
   function sendurl(e) {
     setShowAlert(false)
     setShowInviteModal(true)
   }
-
+  // Helper
+  //   Handles Event creation
   function handleCreateSubmit(e) {
     e.preventDefault()
-
+    // Extract event information specified by the user
     let startdate = e.target.elements.startdate?.value
     let enddate = e.target.elements.enddate?.value
     let starttime = e.target.elements.starttime?.value
     let endtime = e.target.elements.endtime?.value
     let event_name = e.target.elements.event_name?.value
     let event_location = e.target.elements.event_location?.value
-
-    if (startdate === '' || enddate === '') {
+    // Alert error inputs to users
+    if (startdate === "" || enddate === "") {
       setShowAlert(true)
     } else if (startdate > enddate) {
       setShowAlert(true)
@@ -96,22 +104,21 @@ export default function Feed() {
       setShowAlert(true)
     } else {
       //example output: 2021-04-16 10:24 2021-04-16 22:29 study 411 CAS344
-      if (event_name === '') {
-        event_name = 'New Event'
+      if (event_name === "") {
+        event_name = "New Event"
       }
-      if (event_location === '') {
-        event_location = 'Home'
+      if (event_location === "") {
+        event_location = "Home"
       }
-
+      // Create the actual event
       createSingleEvent(
         startdate,
         starttime,
         enddate,
         endtime,
         event_name,
-        event_location,
+        event_location
       )
-
       setShowCreateModal(false)
     }
   }
