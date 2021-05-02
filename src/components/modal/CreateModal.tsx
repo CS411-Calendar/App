@@ -16,26 +16,7 @@ export function CreateModal({
   setShowAlert,
   weather,
 }: Props) {
-  // var json = weather;
-  var json = [
-    { temperature: '75.11', weather: 'light rain' },
-    { temperature: '67.06', weather: 'light rain' },
-    { temperature: '63.77', weather: 'moderate rain' },
-    { temperature: '51.71', weather: 'sky is clear' },
-    { temperature: '65.64', weather: 'light rain' },
-    { temperature: '56.98', weather: 'light rain' },
-    { temperature: '55.69', weather: 'moderate rain' },
-    { temperature: '56.1', weather: 'light rain' },
-    { temperature: '61.02', weather: 'overcast clouds' },
-    { temperature: '51.76', weather: 'light rain' },
-    { temperature: '60.87', weather: 'light rain' },
-    { temperature: '52.12', weather: 'light rain' },
-    { temperature: '50.9', weather: 'light rain' },
-    { temperature: '65.05', weather: 'broken clouds' },
-    { temperature: '82.09', weather: 'light rain' },
-    { temperature: '75.96', weather: 'light rain' },
-    { temperature: '55', weather: 'moderate rain' },
-  ]
+  var json = weather;
   var weatherStart: string, weatherEnd: string
 
   const [weatherStartInfo, setWeatherStartInfo] = useState('')

@@ -34,6 +34,7 @@ export default function Feed() {
       if (res.status === 200) {
         const data: WeatherRes[] = await res.json()
         setWeather(data)
+        console.log("Weather Server: ", weather)
       }
     } catch (e) {
       console.error('Server unreachable')
