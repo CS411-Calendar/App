@@ -11,12 +11,16 @@ export const initClient = () =>
     scope: 'https://www.googleapis.com/auth/calendar',
   })
 
-export const getEmail = () => {
-  return gapi.auth2
-    .getAuthInstance()
-    .currentUser.get()
-    .getBasicProfile()
-    .getEmail()
+export const getEmail: () => string | null = () => {
+  try {
+    return gapi.auth2
+      .getAuthInstance()
+      .currentUser.get()
+      .getBasicProfile()
+      .getEmail()
+  } catch {
+    return null
+  }
 }
 
 export const isAuthorized = () => {

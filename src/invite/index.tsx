@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import apiGoogleconfig from '../config/apiGoogleconfig.json'
 import { oauthSetup, isAuthorized, login, getEmail } from '../lib/auth'
@@ -22,13 +22,25 @@ export default function InviteScreen() {
   const [attendees, setAttendees] = useState<User[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
-  const { id } = useParams<ParamsType>()
+  const [acceptedInvite, setAcceptedInvite] = useState(false)
+  const [email, setEmail] = useState<string | null>(null)
+  const history = useHistory()
 
+  const { id } = useParams<ParamsType>()
+  const sendToLanding = () => {
+    if (!isAuthorized()) {
+      history.push('/')
+    }
+  }
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) =>
       getWeather(position.coords),
     )
-    oauthSetup()
+    oauthSetup(() => {
+      sendToLanding()
+      setEmail(getEmail())
+    })
+
     fetch(`${API_URL}/api/calendar/invite/${id}`).then(async (res) => {
       if (res.status === 200) {
         const data: {
@@ -62,27 +74,32 @@ export default function InviteScreen() {
     }
   }
 
-  const [acceptedInvite, setAcceptedInvite] = useState(false)
   const acceptInviteClick = async () => {
-    if (isAuthorized()) {
-      // Extract user email
-      console.log('User email: ', getEmail())
-    } else {
-      await login()
-      // Extract user email
-      console.log(getEmail())
+    if (email) {
+      const res = await fetch(`${API_URL}/api/calendar/invite/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: email,
+        }),
+      })
+      if (res.status === 200) {
+        setAcceptedInvite(true)
+        // added
+      }
     }
-    setAcceptedInvite(true)
   }
 
   // info to display calendar
   const API_KEY = apiGoogleconfig.apiKey
   let calendars = [
-    {
-      calendarId: 'u.s.apple1102@gmail.com',
-      color: '#B241D1', //optional, specify color of calendar 2 events
-    },
+    ...attendees.map((attendee) => ({ calendarId: attendee.id })),
   ]
+  if (invite) {
+    calendars.push({ calendarId: invite.to })
+  }
 
   function createvent(e) {
     setShowAlert(false)
@@ -169,9 +186,7 @@ export default function InviteScreen() {
               </div>
             )}
             <button
-              onClick={(e) => {
-                acceptInviteClick()
-              }}
+              onClick={acceptInviteClick}
               className="fixed bottom-5 hover:bg-blue-100 hover:text-black bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
               Share Calendar
