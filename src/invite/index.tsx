@@ -8,7 +8,7 @@ type ParamsType = { id: string }
 export default function Invite() {
   useEffect(() => {
     oauthSetup()
-  })
+  }, [])
 
   const [acceptedInvite, setAcceptedInvite] = useState(false)
   const acceptInviteClick = async () => {

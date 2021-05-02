@@ -11,7 +11,7 @@ function App() {
         <Route exact path="/">
           <Landing />
         </Route>
-        <Route exact path="/project/:id">
+        <Route exact path="/invite/:id">
           <Invite />
         </Route>
         <Route exact path="/feed">
