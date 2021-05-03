@@ -180,7 +180,9 @@ export default function InviteScreen() {
       <div>
         The ID of this page is: <b>{id}</b>
       </div>
-      <div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
+
+
+      {invite && getEmail() !== invite.to && (<div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
         {!acceptedInvite && (
           <>
             {invite && (
@@ -218,7 +220,7 @@ export default function InviteScreen() {
             </h1>
           </>
         )}
-      </div>
+      </div>)}
     </div>
   )
 }
