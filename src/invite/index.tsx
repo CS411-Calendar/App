@@ -87,16 +87,19 @@ export default function InviteScreen() {
       })
       if (res.status === 200) {
         setAcceptedInvite(true)
+        console.log(await res.json())
         // added
+      }else{
+        console.log("RES:", res)
+        console.log(await res.json())
       }
     }
   }
 
   // info to display calendar
   const API_KEY = apiGoogleconfig.apiKey
-  let calendars = [
-    ...attendees.map((attendee) => ({ calendarId: attendee.id })),
-  ]
+  let calendars = attendees.map(({calendarId}) => ({calendarId}))
+  console.log("Calendar: ", calendars)
   if (invite) {
     calendars.push({ calendarId: invite.to })
   }
@@ -174,7 +177,7 @@ export default function InviteScreen() {
         {invite && (
           <div className="flex flex-col bg-gray-300 py-2 px-2 rounded border-2 text-xs">
               <h1> Attendee Emails: </h1>
-            {[invite.to, ...(attendees.map(attendee => attendee.id))].map((email, i)=><div key={i}>{email}</div>)}
+            {[invite.to, ...(attendees.map(attendee => attendee.calendarId))].map((email, i)=><div key={i}>{email}</div>)}
           </div>)}
       </div>
       <div>

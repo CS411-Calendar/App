@@ -10,6 +10,7 @@ export type Invite = {
 }
 
 export type User = {
-  id: string
+  calendarId: string
+  inviteId: string
   createdAt: Date
 }
