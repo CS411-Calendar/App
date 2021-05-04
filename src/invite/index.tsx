@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import Calendar from '@ericz1803/react-google-calendar'
 import apiGoogleconfig from '../config/apiGoogleconfig.json'
-import { oauthSetup, isAuthorized, login, getEmail } from '../lib/auth'
+import { oauthSetup, isAuthorized, getEmail } from '../lib/auth'
 import { UserIcon } from '@heroicons/react/solid'
 import { CreateModal } from '../components/modal'
-import { createSingleEvent } from '../lib/event'
+import { createAttendeeEvent } from '../lib/event'
 import { WeatherRes } from '../feed'
 import { API_URL } from '../constants'
 import { Invite, User } from '../types'
@@ -89,8 +89,8 @@ export default function InviteScreen() {
         setAcceptedInvite(true)
         console.log(await res.json())
         // added
-      }else{
-        console.log("RES:", res)
+      } else {
+        console.log('RES:', res)
         console.log(await res.json())
       }
     }
@@ -98,8 +98,7 @@ export default function InviteScreen() {
 
   // info to display calendar
   const API_KEY = apiGoogleconfig.apiKey
-  let calendars = attendees.map(({calendarId}) => ({calendarId}))
-  console.log("Calendar: ", calendars)
+  let calendars = attendees.map(({ calendarId }) => ({ calendarId }))
   if (invite) {
     calendars.push({ calendarId: invite.to })
   }
@@ -134,13 +133,14 @@ export default function InviteScreen() {
         event_location = 'Home'
       }
 
-      createSingleEvent(
+      createAttendeeEvent(
         startdate,
         starttime,
         enddate,
         endtime,
         event_name,
         event_location,
+        calendars.map((calendar) => calendar.calendarId),
       )
 
       setShowCreateModal(false)
@@ -176,54 +176,61 @@ export default function InviteScreen() {
         ) : null}
         {invite && (
           <div className="flex flex-col bg-gray-300 py-2 px-2 rounded border-2 text-xs">
-              <h1> Attendee Emails: </h1>
-            {[invite.to, ...(attendees.map(attendee => attendee.calendarId))].map((email, i)=><div key={i}>{email}</div>)}
-          </div>)}
+            <h1> Attendee Emails: </h1>
+            {[
+              invite.to,
+              ...attendees.map((attendee) => attendee.calendarId),
+            ].map((email, i) => (
+              <div key={i}>{email}</div>
+            ))}
+          </div>
+        )}
       </div>
       <div>
         The ID of this page is: <b>{id}</b>
       </div>
 
-
-      {invite && getEmail() !== invite.to && (<div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
-        {!acceptedInvite && (
-          <>
-            {invite && (
+      {invite && getEmail() !== invite.to && (
+        <div className="flex flex-col h-screen my-auto items-center bgimg bg-cover">
+          {!acceptedInvite && (
+            <>
+              {invite && (
+                <div
+                  className={
+                    'fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded'
+                  }
+                >
+                  The event will occur between {invite.start} to {invite.end}.
+                </div>
+              )}
+              <button
+                onClick={acceptInviteClick}
+                className="fixed bottom-5 hover:bg-blue-100 hover:text-black bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Share Calendar
+              </button>
+            </>
+          )}
+          {acceptedInvite && (
+            <>
               <div
                 className={
                   'fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded'
                 }
               >
-                The event will occur between {invite.start} to {invite.end}.
+                The event will occur between May 5, 2021 to June 10, 2021.
               </div>
-            )}
-            <button
-              onClick={acceptInviteClick}
-              className="fixed bottom-5 hover:bg-blue-100 hover:text-black bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Share Calendar
-            </button>
-          </>
-        )}
-        {acceptedInvite && (
-          <>
-            <div
-              className={
-                'fixed bottom-20 bg-gray-300 text-black py-2 px-5 rounded'
-              }
-            >
-              The event will occur between May 5, 2021 to June 10, 2021.
-            </div>
-            <h1 className={'fixed bottom-5 bg-white'}>
-              {' '}
-              Thank you for accepting the invite from&nbsp;
-              {/* change this part to show the host */}
-              {calendars[0].calendarId}. The owner will send you a calendar
-              invite via E-mail shortly once all attendees accept the invite.
-            </h1>
-          </>
-        )}
-      </div>)}
+              <h1 className={'fixed bottom-5 bg-white'}>
+                {' '}
+                Thank you for accepting the invite from&nbsp;
+                {/* change this part to show the host */}
+                {invite.to}. The owner will send you a calendar invite via
+                E-mail shortly once all attendees accept the invite.
+              </h1>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
