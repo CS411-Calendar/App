@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Landing from './onboarding/Landing'
 import Feed from './feed'
-import Invite from './invite'
+import InviteScreen from './invite'
 import 'tailwindcss/tailwind.css'
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
           <Landing />
         </Route>
         <Route exact path="/invite/:id">
-          <Invite />
+          <InviteScreen />
         </Route>
         <Route exact path="/feed">
           <Feed />
