@@ -1,4 +1,4 @@
-# CalendarApp
+# CalendarApp (Team 20)
 
 ## Project Overview
 To start, please refer to the Docs folder and watch our Project Demo video to obtain an overview of the application.
